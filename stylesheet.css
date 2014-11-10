@@ -1,0 +1,80 @@
+#jao{position:absolute;left:0;height:97%;min-width:200px;width:25%;text-overflow: ellipsis;overflow-y:auto;overflow-x:hidden}
+#container-pdf{position:absolute;top:10px;right:10px;height:calc(100% - 26px);width:800px;}
+#container-search{position:absolute;top:10px;left:30%;left:calc(25% + 40px);height:95%;height:calc(100% - 26px);width:70%;width:calc(75% - 80px)}
+
+#search-results{position:absolute;top:30px;width:95%;width:calc(100% - 10px);padding:5px;height:90%}
+#search-header .sr-div *{font-weight:bold;padding:0;margin:0;-webkit-user-select: none;-moz-user-select: none;-ms-user-select: none;-o-user-select: none;user-select: none;}
+#search-header .sr-div{font-weight:bold;padding:0;margin:0}
+#search-body{height:400px;overflow-y:auto}
+#search-body .sr-div{padding-top:3px;border-bottom:1px solid #EEE}
+#search-body .sr-div:first-child{border-top:1px solid #eee}
+#search-body > div:hover{background:#F2F2F2;}
+.sr-div *{
+	*display: inline;
+	display:inline-block;
+	zoom: 1;
+	padding:0 !important;
+	white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.sr-title{min-width:200px;width:25%;width:calc(50% - 40px - 40px - 60px);}
+.sr-file{min-width:200px;width:30%;width:calc(50% - 40px - 40px - 60px)}
+
+.shactive{text-decoration: underline;}
+.sbactive{background:#DADADA;}
+
+.sr-count{min-width:80px;text-align:center;}
+.sr-pages{min-width:80px;text-align:center;}
+.sr-lm{min-width:120px;text-align:center;}
+
+#iframe-url,#search-box{position:absolute;top:0px;}
+#iframe-url{padding:3px;background:#F2F2F2;height:20px;width:calc(100% - 6px);right:0px;}
+
+#contextmenu{min-width:150px;width:150px;min-height:20px;background:#fff;box-shadow: 3px 3px 3px #888888;position:absolute;z-index:100;/*border:1px solid #CACACA*/}
+#contextmenu div{min-height:20px;padding-left:3px;line-height:20px;width:100%}
+#contextmenu div:hover{cursor:pointer;cursor:hand;background:#CACACA}
+
+#search-box{font-size:1.05em;height:28px;outline: 0;border:1px solid #D8D8D8;width:80%;width:calc(100% - 70px);left:0;padding:1px 5px;}
+#search-box:hover{border:1px solid #B2B2B2}
+#search-box:focus{border:1px solid #4285F4}
+.blue{background:#4484F1;border:1px solid #4387FD;color:#fff;box-shadow: none;outline: 0;}
+#search-button{width:70px;position:absolute;top:0;right:0;height:28px;}
+
+#search-footer{position:absolute;width:100%;bottom:0px;height:50px;line-height:50px;text-align:center;-moz-user-select: none;-webkit-user-select: none;-ms-user-select: none;}
+.btr{border-top-right-radius:2px}
+.btl{border-top-left-radius:2px}
+.bbr{border-bottom-right-radius:2px}
+.bbl{border-bottom-left-radius:2px}
+#search-left,#search-right{height:30px;width:50px;margin:0;padding:5px 18px}
+
+#search-footer * {display:inline;margin:0;}
+.page{height:30px;width:30px;box-shadow: none;outline: 0;padding:6px 9px;margin:0}
+
+#search-pages *{margin:0}
+/*
+#search-answer{position:absolute;top:0;right:0;width:100px;text-align:center;height:28px;line-height:28px}
+*/
+#search-time{font-size:0.85em}
+/*
+#search-button:hover{box-shadow: 0px 1px 1px #D8D8D8;}
+#search-button:active{box-shadow:inset  0 8px 8px -8px #3267C0;}
+*/
+
+.blue:hover{box-shadow: 0px 1px 1px #D8D8D8;}
+.blue:active{box-shadow:inset  0 8px 8px -8px #3267C0;}
+
+#viewer{position:absolute;top:26px;width:100%;height:calc(100% - 26px)}
+
+input[type="checkbox"]:disabled {display:none}
+.jaofiletree{text-overflow:ellipsis}
+.h{display:none}
+
+.ellipsis{overflow:hidden;width:80%;width:calc(100% - 20px);direction:rtl; TEXT-ALIGN:right;margin-left:15px;white-space: nowrap;}
+.ellipsis:after{position:absolute;left:0px; content:"...";}
+.hover:hover{cursor: pointer; cursor: hand;}
+
+.glow {-webkit-transition-duration: 0.1s;transition-duration: 0.1s;-webkit-transition-property: box-shadow;transition-property: box-shadow;-webkit-transform: translateZ(0);transform: translateZ(0);box-shadow: 0 0 1px rgba(0, 0, 0, 0);}
+.glow:not(.active):hover, .glow:not(.active):focus, .glow:not(.active):active {cursor:hand;box-shadow: 0 0 8px rgba(0, 0, 0, 0.6);}
+
+.active{-webkit-transition-property: box-shadow;transition-property: box-shadow;box-shadow: inset 2px 2px 2px rgba(0, 0, 0, 0.6), 0 0 1px rgba(0, 0, 0, 0);  }
+
+#helper{position:absolute;top:0;left:0;height:100%;width:100%;background:rgba(191,191,191,0.7);color:#fff}

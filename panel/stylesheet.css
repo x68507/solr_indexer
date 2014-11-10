@@ -1,0 +1,13 @@
+.links:not(:last-child){margin-bottom:10px;}
+.container-links{padding:10px;border:1px solid black;width:150px}
+#console{max-width:230px; word-wrap: break-word;}
+#logout{position:absolute;bottom:20px;right:20px}
+.tab{padding-left:20px}
+
+#container-folders{position:absolute;top:10px;left:250px;width:70%;width:calc(100% - 260px);height:95%;height:calc(100% - 60px);overflow-x:hidden;overflow-y:auto;border:1px solid gray}
+#header-folders{width:100%;height:31px;border-bottom:1px solid gray}
+#header-folders input{margin:5px;display:inline}
+#header-other{position:absolute;top:0;left:195px}
+form{margin:0;padding:0}
+#folders{padding:5px}
+#curDir{font-family:"Courier New", Courier, monospace;padding:3px}

@@ -1,0 +1,9 @@
+<?xml version='1.0' encoding='utf-8'?>
+<xml>
+	<php>c:\xampp\php\php.exe</php>
+	<tika>c:\tika\tika-app-1.6.jar</tika>
+	<post>c:\tika\solr\example\exampledocs\post.jar</post>
+	<solr>c:\tika\solr\bin\solr.cmd</solr>
+	<baseDir>\docs\</baseDir>
+	<numRows>25</numRows>
+</xml>
