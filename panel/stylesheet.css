@@ -1,6 +1,6 @@
 .links:not(:last-child){margin-bottom:10px;}
 .container-links{padding:10px;border:1px solid black;width:150px}
-#console{max-width:230px; word-wrap: break-word;}
+#console,#left{max-width:230px; word-wrap: break-word;}
 #logout{position:absolute;bottom:20px;right:20px}
 .tab{padding-left:20px}
 

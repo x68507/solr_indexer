@@ -49,7 +49,7 @@
 		$b = preg_match($re_dq,$term,$match); 
 		
 		echo "<dub><![CDATA[".implode(' | ',$match)."]]></dub>";
-		
+		$hl = '&hl=true&hl.fl=*&hl.simple.pre=%3Cem%3E&hl.simple.post=%3C/em%3E&hl.snippets=20';
 		
 		if ($b){
 			$q = urlencode('text_x:'.$match[0]);
@@ -58,9 +58,12 @@
 		}else{
 			$q = 'text:'.urlencode($term).'~200';
 		}
-		$url = 'http://'.$host.':8983/solr/collection1/select?q='.$q.$sub.'&start='.$start.'&rows='.$rows.'&wt=json&fl=creator%2Ctitle%2CfileName%2ClastModified%2CpageCount%2CbaseDir';
+		$url = 'http://'.$host.':8983/solr/collection1/select?q='.$q.$sub.'&start='.$start.'&rows='.$rows.'&wt=json&fl=creator%2Ctitle%2CfileName%2ClastModified%2CpageCount%2CbaseDir'.$hl;
 		//https://wiki.apache.org/solr/SolrRelevancyFAQ
 		//https://wiki.apache.org/solr/AnalyzersTokenizersTokenFilters#WordDelimiterFilter
+		//http://localhost:8983/solr/collection1/select?q=text_x%3A%22production+orders%22&wt=xml&indent=true&hl=true&hl.fl=*&hl.simple.pre=%3Cem%3E&hl.simple.post=%3C/em%3E&hl.snippets=20&fl=creator,title,fileName,lastModified,pageCount,baseDir
+		//http://localhost:8983/solr/collection1/select?q=text_x%3A%22production+order%22&start=0&rows=25&wt=json&fl=creator%2Ctitle%2CfileName%2ClastModified%2CpageCount%2CbaseDir
+		/*most likely needs to use highlighting in order to find the index of a multivalued query*/
 		
 		if (strlen($url)==0) die;
 		

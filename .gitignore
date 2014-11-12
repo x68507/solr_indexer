@@ -1,0 +1,3 @@
+#Ignores deleted or modified files in the local builds
+docs/*
+docs/

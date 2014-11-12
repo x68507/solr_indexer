@@ -83,7 +83,7 @@
 				var win = window.open('http://localhost:8983/solr/update?stream.body=%3Cdelete%3E%3Cquery%3E*:*%3C/query%3E%3C/delete%3E','del');
 				setTimeout(function(){
 					c('All entries deleted');
-					//win.close();
+					win.close();
 				},100);
 			}
 			
@@ -259,11 +259,16 @@
 	
 	<body>
 		<h4>Make sure to modify:</h4>
+		<div id='left'>
 		<ul>
 			<li>schema.xml</li>
+			<li>solrconfig.xml: <strike>add searchComponent tvComponent</strike>this is actually enabled by default</li>
 		</ul>
+		</div>
+		<!--
 		<input class='disabled' type='text' id='base' disabled='disabled' value='<?php $m = fopen('base.txt','r');echo fread($m,filesize('base.txt'));fclose($m); ?>'>
 		<input type='button' value='Unlock' onclick='enable_base()'>
+		-->
 		<br><br>
 		<div class='container-links'>
 			<div class='links'>
