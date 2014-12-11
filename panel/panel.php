@@ -48,9 +48,11 @@
 				var t = microtime(true);
 				
 				$.post('actions.php',{'action':'refresh_index'},function(data){
+					console.log('mio');
 					//c(data);
-					var time = microtime(true)-t;
-					c('Completed in ' + Math.round(time*1000)/1000 + 's',true);
+					//var time = microtime(true)-t;
+					c('<hr>'+data+'<hr>');
+					//c('Completed in ' + Math.round(time*1000)/1000 + 's',true);
 				});
 				
 			}
@@ -80,7 +82,8 @@
 			}
 			
 			function delete_entries(){
-				var win = window.open('http://localhost:8983/solr/update?stream.body=%3Cdelete%3E%3Cquery%3E*:*%3C/query%3E%3C/delete%3E','del');
+				
+				var win = window.open(window.location.origin + ':8983/solr/update?stream.body=%3Cdelete%3E%3Cquery%3E*:*%3C/query%3E%3C/delete%3E','del');
 				setTimeout(function(){
 					c('All entries deleted');
 					win.close();
@@ -230,6 +233,28 @@
 				$('input[type="submit"]').click();
 			}
 			
+			function schema(){
+				//var ans = confirm('You only need to do this one time during initial setup.  Are you sure you want to proceed?');
+				ans = true;
+				
+				if (ans){
+					$.ajax({
+						url:'actions.php'
+						,data:{'action':'schema'}
+						,dataType:'xml'
+						,type:'POST'
+						,success:function(data){
+							console.log('success');
+							console.log(data);
+						}
+						,error:function(data){
+							console.log('failure');
+							console.log(data);
+						}
+					});
+				}
+			}
+			
 			var isValid=(function(){
 				var rg1=/^[^\\\/:\*\?"<>\|]+$/; 
 				var rg2=/^\./; 
@@ -258,18 +283,12 @@
 	</head>
 	
 	<body>
-		<h4>Make sure to modify:</h4>
-		<div id='left'>
-		<ul>
-			<li>schema.xml</li>
-			<li>solrconfig.xml: <strike>add searchComponent tvComponent</strike>this is actually enabled by default</li>
-		</ul>
-		</div>
+		
 		<!--
 		<input class='disabled' type='text' id='base' disabled='disabled' value='<?php $m = fopen('base.txt','r');echo fread($m,filesize('base.txt'));fclose($m); ?>'>
 		<input type='button' value='Unlock' onclick='enable_base()'>
 		-->
-		<br><br>
+		
 		<div class='container-links'>
 			<div class='links'>
 				<a href='#' onclick='server_start()'>Start Server</a>
@@ -285,6 +304,9 @@
 			</div>
 			<div class='links'>
 				<a href='..' target='_blank'>Launch App</a>
+			</div>
+			<div class='links'>
+				<a href='#' onclick='schema()'>Write Schema</a>
 			</div>
 			<div class='links'>
 				<a href='#' onclick='clear_console()'>Clear Console</a>

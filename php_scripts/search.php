@@ -3,106 +3,203 @@
 	/*--USER DEFINED CONSTANTS--------------*/
 	/*--------------------------------------*/
 	require_once(realpath(__DIR__ .'/../panel/config.php'));
-	$rows = $numRows;
 	
+	$maxAuto = 10;
 	/*--------------------------------------*/
 	/*--END OF CONSTANT SECTION-------------*/
 	/*--------------------------------------*/
 	
 	if (!isset($_POST) || !isset($_POST['json'])) die;
 	
-	
+	$host = $_SERVER['SERVER_NAME'];
 	
 	header('Content-Type: text/xml'); 
 	echo "<?xml version='1.0' encoding='utf-8'?>";
 	echo "<xml>";
 		require_once('err.php');
-		/*
-			if the Apache error logs have something about mpm_winnt 150 child processes, then change the httpd.conf file
-			   find httpd-mpm.conf with <if_module mpm_winnt> and change child processes to 25
-		*/
-		
-		$time_start = microtime(true);
-		$json = json_decode($_POST['json']);
-		
-		
-		
-		$term = $json->{'term'};
+		switch($_POST['action']){
+			case 'auto':
+				
+				$maxAuto = 10;
+				$q = trim($_POST['json']);
+				$regex = '/'.$q.'[^\s]* [^\s]*/i';
+				
+				$blacklist = array('or','on','and');
+				preg_replace('("|\')','',$q);
+				$q = urlencode($q);
+				$hl = '&hl=true&hl.fl=content&hl.simple.pre=%3Cem%3E&hl.simple.post=%3C%2Fem%3E&hl.preserveMulti=true';
+				$url = 'http://'.$host.':8983/solr/collection1/select?q=text:"'.$q.'"&fl=id&wt=json&indent=true'.$hl;
+				
+				$context = stream_context_create(array('http' => array('header' => "Host: $host")));
+				$result = file_get_contents($url, 0, $context);
+				
+				$response = json_decode($result,true);
+				
+				if ($xml){
+					echo "<url><![CDATA[".$url."]]></url>";
+				}
+				
+				
+				$ary = array();
+
+				
+				$bc = true;
+
+				
+				foreach($response['highlighting'] as $key=>$val){
+					$str = strtolower(strip_tags(implode('',$val['content'])));
+					
+					$str = str_replace(array('.',',',')','(',':',';','?','!'),'',$str);
+					
+					preg_match_all($regex,$str,$match);
+					foreach($match as $v1){
+						foreach($v1 as $v2){
+							$arr=preg_split("/\s+(?=\S*+$)/",$v2);
+							if ($arr[0]!=$arr[1] && strlen($arr[1])>2 && strlen($arr[1])<30 && !in_array($arr[1],$blacklist)){
+								if (!array_key_exists($v2,$ary)){
+									$ary[$v2] = 0;
+								}
+								$ary[$v2]++;
+							}
+						}
+					}
+					unset($str,$match,$arr);
+				}
+				unset($val);
+				arsort($ary);
+
+				
+
+				$dex = 1;
+				
+				if (count($ary)>0){
+					reset($ary);
+					$first_key = key($ary);
+					$arr = preg_split("/\s+(?=\S*+$)/",$first_key);
+					echo "<main><![CDATA[".$arr[0]."]]></main>";
+				}
+				
+				//echo "<main>".$first_key."</main>";
+				foreach($ary as $key=>$val){
+					echo "<auto><![CDATA[".$key."]]></auto>";
+					$dex++;
+					if ($dex>$maxAuto) break;
+				}
+
+
+				
+				break;
+			case 'search':
+				/*
+					if the Apache error logs have something about mpm_winnt 150 child processes, then change the httpd.conf file
+					   find httpd-mpm.conf with <if_module mpm_winnt> and change child processes to 25
+				*/
+				
+				$time_start = microtime(true);
+				
+				//Gets all the data passed to the server
+				$json = json_decode($_POST['json']);
 			
-		
-		
-		
-		$start = $json->{'offset'}*$rows;
-		
-		$keyword = array('lastModifed','creator','fileName');
-		$host = $_SERVER['SERVER_NAME'];
-		$sub = '';
-		
-		if (isset($json->{'folders'})){
-			$sub = ' AND (baseDir:"'.implode((count($json->{'folders'})==1?'':'" OR baseDir:"'),$json->{'folders'}).'")';
-			$sub = urlencode($sub);
+				//Main search term; SOLR is setup to not require a field for this term (searches the content of a file)
+				$q = '';
+				$x = array();
+				if (isset($json->{'term'})){
+					$term = $json->{'term'};
+					$enclose = ($json->{'auto'}=='true'?'"':'');
+					$q = $term;
+					array_push($x,$enclose.$term.$enclose);
+				}
+				
+				//Default params for building the URL
+				$start = '&start='.$json->{'offset'}*$numRows;
+				$rows = '&rows='.$numRows;
+				
+				$fl = '&fl=creator%2Ctitle%2CfileName%2ClastModified%2CpageCount%2CbaseDir';
+				
+				//Generates information regarding searching in a subdirectory
+				$sub = '';
+				if (isset($json->{'folders'})){
+					$sub = ' AND (baseDir:"'.implode((count($json->{'folders'})==1?'':'" OR baseDir:"'),$json->{'folders'}).'")';
+					$sub = urlencode($sub);
+				}
+				
+				//Generates extra information for advanced searching
+				if (isset($json->{'creator'})){
+					$enclose = (substr_count($json->{'creator'},' ')>0?'"':'');
+					array_push($x,'creator:'.$enclose.$json->{'creator'}.$enclose);
+				}
+				if (isset($json->{'title'})){
+					$enclose = (substr_count($json->{'title'},' ')>0?'"':'');
+					array_push($x,'fileName:'.$enclose.$json->{'title'}.$enclose);
+				}
+				if (isset($json->{'page'})){
+					$p = $json->{'page'};
+					$p2 = (isset($json->{'page2'})?$json->{'page2'}:$p);
+					$op = $json->{'page-op'};
+					array_push($x,'pageCount:['.($op=='lt'?'*':$p).' TO '.($op=='gt'?'*':$p2).']');
+				}
+				$op = '';
+				$temp = '';
+				if (isset($json->{'date'})){
+					$d = $json->{'date'};
+					$d2 = (isset($json->{'date2'})?$json->{'date2'}:$d);
+					$op = $json->{'date-op'};
+					$temp = 'lastModified:['.($op=='lt'?'*':$d.'T00:00:00Z').' TO '.($op=='gt'?'*':$d2.'T23:59:59Z').']';
+					array_push($x,$temp);
+				}
+				echo "<op>$op</op>";
+				echo "<temp><![CDATA[".$temp."]]></temp>";
+				$q = urlencode(implode(' AND ',$x));
+				
+				
+				
+				$url = 'http://'.$host.':8983/solr/collection1/select?q='.$q.$sub.$start.$rows.'&wt=json&indent=true';
+				//$url = 'http://'.$host.':8983/solr/collection1/select?q=coois'.$fl.'&wt=json&indent=true';
+				
+				//$url = 'http://localhost:8983/solr/collection1/select?q=coois&wt=json&indent=true';
+				//https://wiki.apache.org/solr/SolrRelevancyFAQ
+				
+				//most likely needs to use highlighting in order to find the index of a multivalued query
+				
+				if (strlen($url)==0) die;
+				
+				echo "<url><![CDATA[".$url."]]></url>";
+				
+				$context = stream_context_create(array('http' => array('header' => "Host: $host")));
+				$result = file_get_contents($url, 0, $context);
+				$response = json_decode($result,true);
+					
+					
+					$tots = $response['response']['numFound'];
+					$e = $json->{'offset'}*$numRows+$numRows;
+					
+					echo "<start>".($tots==0?0:$json->{'offset'}*$numRows+1)."</start>";
+					echo "<end>".($tots<$e?$tots:$e)."</end>";
+					echo "<pages>".ceil($tots/$numRows)."</pages>";
+					echo "<curPage>".$json->{'offset'}."</curPage>";
+					echo "<total>".$tots."</total>";
+					
+					foreach($response['response']['docs'] as $val){
+						echo "<file>";
+							
+							
+							echo "<title><![CDATA[".$val['title'][0]."]]></title>";
+							
+							echo "<lastModified>$val[lastModified]</lastModified>";
+							echo "<creator><![CDATA[".$val['creator']."]]></creator>";
+							echo "<baseDir>$val[baseDir]</baseDir>";
+							echo "<fileName>$val[fileName]</fileName>";
+							//echo "<needle>$term</needle>";
+							
+							//echo "<haystack><![CDATA[".$val['content'][0]."]]></haystack>";
+							echo "<pageCount>$val[pageCount]</pageCount>";
+							
+						echo "</file>";
+					}
+				
+				echo "<time>".round((microtime(true) - $time_start),2)."</time>";
+				break;
 		}
-		
-		//exact search
-		
-		$re_dq = '/"[^"\\\\]*(?:\\\\.[^"\\\\]*)*"/s';
-		$b = preg_match($re_dq,$term,$match); 
-		
-		echo "<dub><![CDATA[".implode(' | ',$match)."]]></dub>";
-		$hl = '&hl=true&hl.fl=*&hl.simple.pre=%3Cem%3E&hl.simple.post=%3C/em%3E&hl.snippets=20';
-		
-		if ($b){
-			$q = urlencode('text_x:'.$match[0]);
-		}elseif (strposa($term,$keyword)){
-			$type = 'advanced';
-		}else{
-			$q = 'text:'.urlencode($term).'~200';
-		}
-		$url = 'http://'.$host.':8983/solr/collection1/select?q='.$q.$sub.'&start='.$start.'&rows='.$rows.'&wt=json&fl=creator%2Ctitle%2CfileName%2ClastModified%2CpageCount%2CbaseDir'.$hl;
-		//https://wiki.apache.org/solr/SolrRelevancyFAQ
-		//https://wiki.apache.org/solr/AnalyzersTokenizersTokenFilters#WordDelimiterFilter
-		//http://localhost:8983/solr/collection1/select?q=text_x%3A%22production+orders%22&wt=xml&indent=true&hl=true&hl.fl=*&hl.simple.pre=%3Cem%3E&hl.simple.post=%3C/em%3E&hl.snippets=20&fl=creator,title,fileName,lastModified,pageCount,baseDir
-		//http://localhost:8983/solr/collection1/select?q=text_x%3A%22production+order%22&start=0&rows=25&wt=json&fl=creator%2Ctitle%2CfileName%2ClastModified%2CpageCount%2CbaseDir
-		/*most likely needs to use highlighting in order to find the index of a multivalued query*/
-		
-		if (strlen($url)==0) die;
-		
-		echo "<url><![CDATA[".$url."]]></url>";
-		
-		$context = stream_context_create(array('http' => array('header' => "Host: $host")));
-		$result = file_get_contents($url, 0, $context);
-		$response = json_decode($result,true);
-			
-			
-			$tots = $response['response']['numFound'];
-			$e = $start+$rows;
-			
-			echo "<start>".($tots==0?0:$start+1)."</start>";
-			echo "<end>".($tots<$e?$tots:$e)."</end>";
-			echo "<pages>".ceil($tots/$numRows)."</pages>";
-			echo "<curPage>".$json->{'offset'}."</curPage>";
-			echo "<total>".$tots."</total>";
-			
-			foreach($response['response']['docs'] as $val){
-				echo "<file>";
-					
-					
-					echo "<title><![CDATA[".$val['title'][0]."]]></title>";
-					
-					echo "<lastModified>$val[lastModified]</lastModified>";
-					echo "<creator><![CDATA[".$val['creator']."]]></creator>";
-					echo "<baseDir>$val[baseDir]</baseDir>";
-					echo "<fileName>$val[fileName]</fileName>";
-					echo "<needle>$term</needle>";
-					
-					//echo "<haystack><![CDATA[".$val['content'][0]."]]></haystack>";
-					echo "<pageCount>$val[pageCount]</pageCount>";
-					
-				echo "</file>";
-			}
-		
-		echo "<time>".round((microtime(true) - $time_start),2)."</time>";
-		
 	echo "</xml>";
 	
 	

@@ -10,18 +10,13 @@
 		die;
 	}
 	*/
+		$pageTitle = $xml->title;
 		$tika = $xml->tika;
 		$post = $xml->post;
 		$php  = $xml->php;
 		$solr = $xml->solr;
 		$baseDir = $xml->baseDir;
-		$numRows = $xml->numRows
-	
-/*	
-	//only echos for AJAX requie
-		if(!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
-			
-			
-		}
-		*/
+		$numRows = $xml->numRows;
+		$schema = $xml->schema;
+		$solrconfig = $xml->solrconfig;
 ?>

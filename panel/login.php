@@ -1,6 +1,9 @@
 <?php
 	session_start();
 	
+	libxml_use_internal_errors(true);
+	$xml = simplexml_load_file(realpath(dirname(__FILE__).'\config.xml'));
+	
 	$username = 'root';
 	$password = 'sap';
 	

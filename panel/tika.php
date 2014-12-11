@@ -9,7 +9,7 @@
 	$time_start = microtime(true);
 	$di = new RecursiveDirectoryIterator($parent);
 	$dex = 1;
-	$tika = 'c:\tika\tika-app-1.6.jar';
+	//$tika = 'c:\tika\tika-app-1.6.jar';
 	echo $tika."\n";
 	echo 'Starting... ' . "\n";
 	

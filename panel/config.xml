@@ -1,9 +1,12 @@
 <?xml version='1.0' encoding='utf-8'?>
 <xml>
+	<title>Manuals</title>
 	<php>c:\xampp\php\php.exe</php>
 	<tika>c:\tika\tika-app-1.6.jar</tika>
 	<post>c:\tika\solr\example\exampledocs\post.jar</post>
 	<solr>c:\tika\solr\bin\solr.cmd</solr>
+	<schema>C:\tika\solr\example\solr\collection1\conf\schema.xml</schema>
+	<solrconfig>C:\tika\solr\example\solr\collection1\conf\solrconfig.xml</solrconfig>
 	<baseDir>\docs\</baseDir>
-	<numRows>25</numRows>
+	<numRows>10</numRows>
 </xml>
