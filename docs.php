@@ -28,7 +28,7 @@
 		
 		<!--Custom-->
 		<script id='jscript' type='text/javascript' src='jscript.js'></script>
-		<link type='text/css' rel='stylesheet' href='stylesheet.css?v=2'/>
+		<link type='text/css' rel='stylesheet' href='stylesheet.css?v=3'/>
 		
 		<script type='text/javascript' src='common.js'></script>
 	</head>
@@ -92,7 +92,7 @@
 			<div id='search-results'>
 				<div id='search-time'>&nbsp;</div>
 				<div id='search-header'>
-					<div class='sr-div'><div class='sr-title hover asc nus'>Title</div><div class='sr-file hover asc nus'>Folder</div><div class='sr-count hover asc numeric nus'>&nbsp;</div><div class='sr-pages hover asc numeric nus'>Pages</div><div class='sr-lm hover asc nus'>Last Modified</div></div>
+					<div class='sr-div'><div class='sr-title hover asc nus' data-field='fileNameSort'>Title</div><div class='sr-file hover asc nus' data-field='baseDirSort'>Folder</div><div class='sr-pages hover asc numeric nus' data-field='pageCount'>Pages</div><div class='sr-lm hover asc nus' data-field='lastModified'>Last Modified</div></div>
 				</div>
 				<div id='search-body'>
 				</div>

@@ -8,45 +8,20 @@
 	}
 	$action = $_POST['action'];
 	
+	
+	
 	switch($action){
 		case 'server_start':
-		
-			$cmd = 'START /B '.realpath($solr).' start -h localhost';
-			error_reporting(E_ALL & ~E_NOTICE & ~E_WARNING);
-			$fp = fsockopen('127.0.0.1', 8983, $errno, $errstr, 1);
-			if ($fp) {
-				
-				
-				//echo '1'.'<hr>';
-				echo '&nbsp;&nbsp;&nbsp;Port is already in use';
-			}else{
-				//exec($cmd);
-				pclose(popen($cmd,'r'));echo 'Server started';
-				//echo $cmd.'<hr>';
-				//echo '2'.'<hr>';
-			}
-			
-			fclose($fp);
-			error_reporting(-1);
-			
-			
+			echo server_start();
 			break;
 		case 'server_stop':
-			$cmd = 'START /B '.realpath($solr).' stop -p 8983';
-			//pclose(popen($cmd,'r'));echo 'Server stopped';
-			exec($cmd);echo 'Server stopped';
+			echo server_stop();
 			break;
 		case 'refresh_index':
-			/*
-			$m = fopen(dirname(__FILE__).'\base.txt','r');
-				$file = fread($m,filesize(dirname(__FILE__).'\base.txt'));
-				$base = realpath(dirname(__FILE__).'../..//'.$file);
-			fclose($m);
-			*/
+			$url = 'http://localhost:8983/solr/update?stream.body=%3Cdelete%3E%3Cquery%3E*:*%3C/query%3E%3C/delete%3E';
+			$context = stream_context_create(array('http' => array('header' => "Host: $host")));
+			$result = file_get_contents($url, 0, $context);
 			$base = realpath(__DIR__ .'/..//'.$myBase);
-			
-			
-			//echo $base.'<br>';
 			
 			$tika = dirname(__FILE__).'/tika.php';
 			$txt = realpath($php).' '.realpath($tika).' '.realpath($base);
@@ -111,46 +86,140 @@
 			header('Location: index.php');
 			break;
 		case 'schema':
-			$xmlSchema = simplexml_load_file($schema);
-			$sxe = new SimpleXMLElement($xmlSchema->asXML());
-
-			//arrays to check for SOLR modifications
-			$aryField = array('creator'=>0,'fileName'=>0,'lastModified'=>0,'pageCount'=>0,'contentType'=>0,'baseDir'=>0);
-			
-			//checking to see if XML node is present in schema file
-			foreach($xmlSchema->field as $field){
-				
-				if (array_key_exists((string)$field['name'],$aryField)){
-					$aryField[(string)$field['name']] = 1;
-				}
-			}	
-			//re-writing schema file to include
-			foreach($aryField as $key=>$val){
-				if (intval($val)==0){
-					switch($key){
-						case 'creator':
-							addNode('creator','text_general');break;
-						case 'fileName':
-							addNode('fileName','text_general');break;
-						case 'lastModified':
-							addNode('lastModified','date');break;
-						case 'pageCount':
-							addNode('pageCount','int');break;
-						case 'contentType':
-							addNode('contentType','text_general');break;
-						case 'baseDir':
-							addNode('baseDir','text_general');break;		
-					}
-				}
-			}
-			//saves file if modified
-			if (array_sum($aryField)!=count($aryField)) $sxe->asXML($schema);
+			fncSchema();
+			break;
+		case 'secure_ip':
+			$host = secureJetty($_POST['host']);
+			server_stop();
+			sleep(1);
+			server_start();
+			echo 'IP secured @ '.$host;
 			break;
 	}
 
+function server_start(){
+	global $solr;
+	
+	fncSchema();
+	$cmd = 'START /B '.realpath($solr).' start -h localhost';
+	error_reporting(E_ALL & ~E_NOTICE & ~E_WARNING);
+	$fp = fsockopen('127.0.0.1', 8983, $errno, $errstr, 1);
+	if ($fp) {
+		$str = '&nbsp;&nbsp;&nbsp;Port is already in use';
+	}else{
+		pclose(popen($cmd,'r'));
+		$str = 'Server started';
+	}
+	
+	fclose($fp);
+	error_reporting(-1);
+	
+	return $str;
+}
 
-function addNode($name,$type){
-	global $sxe;
+function server_stop(){
+	global $solr;
+	$cmd = 'START /B '.realpath($solr).' stop -p 8983';
+	//pclose(popen($cmd,'r'));echo 'Server stopped';
+	exec($cmd);
+	return 'Server stopped';
+}
+
+function fncSchema(){
+	xmlRegex();
+
+	global $schema;
+	
+	$xmlSchema = simplexml_load_file($schema);
+
+	$sxe = new SimpleXMLElement($xmlSchema->asXML());
+	//arrays to check for SOLR modifications
+	$aryField = array('creator'=>0,'fileName'=>0,'lastModified'=>0,'pageCount'=>0,'contentType'=>0,'baseDir'=>0,
+		'fileNameSort'=>0,'baseDirSort'=>0);
+	
+	//checking to see if XML node is present in schema file
+	foreach($xmlSchema->field as $field){
+		if (array_key_exists((string)$field['name'],$aryField)){
+			$aryField[(string)$field['name']] = 1;
+		}
+	}
+	//re-writing schema file to include
+	foreach($aryField as $key=>$val){
+		if (intval($val)==0){
+			switch($key){
+				case 'creator':
+					addNode('creator','text_general',$sxe);break;
+				case 'fileName':
+					addNode('fileName','text_general',$sxe);break;
+				case 'lastModified':
+					addNode('lastModified','date',$sxe);break;
+				case 'pageCount':
+					addNode('pageCount','int',$sxe);break;
+				case 'contentType':
+					addNode('contentType','text_general',$sxe);break;
+				case 'baseDir':
+					addNode('baseDir','text_general',$sxe);break;		
+				case 'fileNameSort':
+					addNode('fileNameSort','alphaOnlySort',$sxe);
+					addNodeCopy('fileName','fileNameSort',$sxe);
+					break;
+				case 'baseDirSort':
+					addNode('baseDirSort','alphaOnlySort',$sxe);
+					addNodeCopy('baseDir','baseDirSort',$sxe);
+					break;
+			}
+		}
+	}
+	
+	
+	
+	
+	//saves file if modified
+	if (array_sum($aryField)!=count($aryField)){
+	
+		$sxe->asXML($schema);
+		
+		$doc = new DOMDocument();
+		$doc->preserveWhiteSpace = false;
+		$doc->formatOutput = true;
+		$xml = simplexml_load_file($schema)->asXML();
+		$doc->loadXML($xml);
+		$doc->save($schema);
+	}
+}
+
+function xmlRegex(){
+	global $schema;
+	
+	$xmlSchema = simplexml_load_file($schema);
+	
+	//fixes alphaOnlySort regex to handle file names beginning with numbers
+	$bSave = false;
+	foreach($xmlSchema->fieldType as $ft){
+		if ((string)$ft['name']=='alphaOnlySort'){
+			foreach($ft->analyzer->filter as $filter){
+				if ((string)$filter['class']=='solr.PatternReplaceFilterFactory' && (string)$filter['pattern']!='([^a-z0-9])'){
+					$filter['pattern'] = '([^a-z0-9])';
+					$bSave = true;
+				}
+			}
+		}
+	}
+	if ($bSave==true){
+		$xmlSchema->asXML($schema);
+	}
+}
+
+function addNodeCopy($source,$dest,$sxe){
+	$newItem = $sxe->addChild('copyField');
+		$newItem->addAttribute('source',$source);
+		$newItem->addAttribute('dest',$dest);
+	unset($newItem);
+	return $sxe;
+}
+
+
+function addNode($name,$type,$sxe){
 	$newItem = $sxe->addChild('field');
 		$newItem->addAttribute('name',$name);
 		$newItem->addAttribute('type',$type);
@@ -158,6 +227,45 @@ function addNode($name,$type){
 		$newItem->addAttribute('stored','true');
 	unset($newItem);
 	return $sxe;	
+}
+
+function secureJetty($host){
+	global $jetty,$remote_ip;
+	
+	if (strlen($host)==0) $host = 'localhost';
+	
+	$xml = simplexml_load_file($jetty);
+	
+	//arrays to check for SOLR modifications
+	$aryProp  = array('host'=>$host,'port'=>'8983');
+	$aryField = array();
+	
+	//checking to see if XML node is present in schema file
+	foreach($xml->Call->Arg->{'New'}->Set as $item){
+		if (array_key_exists((string)$item['name'],$aryProp)){
+			foreach($item->SystemProperty as $sp){
+				if (isset($sp['default'])){
+					$sp['default'] = $aryProp[(string)$item['name']];
+				}else{
+					$sp->addAttribute('default',$aryProp[(string)$item['name']]);
+				}
+			}
+		}
+	}
+	$xml->asXML($jetty);
+	unset($xml);
+	
+	//changes config.xml to reflect proper IP address for searching remote server
+	$config = realpath(__DIR__ .'/config.xml');
+	$xml = simplexml_load_file($config);
+	
+	$xml->remote_ip = $host;
+	
+	$xml->asXML($config);
+	
+	
+	
+	return $host;
 }
 
 function del($file){

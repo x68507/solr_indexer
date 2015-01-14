@@ -17,26 +17,30 @@ var DELAY = 250, eClicks = 0, cClicks = 0, eTimer = null, cTimer = null, eCur = 
   
     var options =  {
       'root'            : '/',
-      'script'         : 'connectors/jaoconnector.php',
-      'showroot'        : 'root',
-      'onclick'         : function(elem,type,file){},
-      'oncheck'         : function(elem,checked,type,file){},
-      'usecheckboxes'   : true, //can be true files dirs or false
-      'expandSpeed'     : 500,
-      'collapseSpeed'   : 500,
-      'expandEasing'    : null,
-      'collapseEasing'  : null,
-      'canselect'       : true
+      'script'			: 'connectors/jaoconnector.php',
+      'showroot'		: 'root',
+      'onclick'			: function(elem,type,file){},
+      'oncheck'			: function(elem,checked,type,file){},
+      'usecheckboxes'	: true, //can be true files dirs or false
+      'expandSpeed'		: 100,
+      'collapseSpeed'	: 100,
+      'expandEasing'	: null,
+      'collapseEasing'	: null,
+      'canselect'		: true,
+	  'afterload'		: function(elem){}
+	  
     };
 
     var methods = {
-        init : function( o ) { 
-	    if($(this).length==0){
+        init : function( o ) {
+			if($(this).length==0){
                 return;
             }
             $this = $(this);
-            $.extend(options,o);
-
+			//$this.trigger('afterload');
+            
+			$.extend(options,o);
+			
             if(options.showroot!=''){
                 checkboxes = '';
                 if(options.usecheckboxes===true || options.usecheckboxes==='dirs'){
@@ -44,8 +48,13 @@ var DELAY = 250, eClicks = 0, cClicks = 0, eTimer = null, cTimer = null, eCur = 
                 }
                 $this.html('<ul class="jaofiletree"><li class="drive directory collapsed selected">'+checkboxes+'<a href="#" data-file="'+options.root+'" data-type="dir">'+options.showroot+'</a></li></ul>');
             }
-            openfolder(options.root);
+			openfolder(options.root);
+			$this.find('input[type="checkbox"]:eq(0)').prop('checked',true);
+			options.afterload.apply(this);
         },
+		afterload : function(e){
+			
+		},
         open : function(dir){
             openfolder(dir);
         },
@@ -77,6 +86,11 @@ var DELAY = 250, eClicks = 0, cClicks = 0, eTimer = null, cTimer = null, eCur = 
 			return list;
         }
     };
+	
+	afterLoad = function(){
+		console.log('in here');
+	};
+	
 
     openfolder = function(dir) {
 	    if($this.find('a[data-file="'+dir+'"]').parent().hasClass('expanded')){
@@ -84,57 +98,53 @@ var DELAY = 250, eClicks = 0, cClicks = 0, eTimer = null, cTimer = null, eCur = 
 	    }
 		
 		
-            var ret;
-            ret = $.ajax({
-                url : options.script,
-                data : {dir : dir},
-                context : $this,
-				dataType: 'json',
-                beforeSend : function(){this.find('a[data-file="'+dir+'"]').parent().addClass('wait');}
-            }).done(function(datas) {
-				//console.log(datas)
+		var ret;
+		ret = $.ajax({
+			async		: false,
+			url 		: options.script,
+			data		: {dir : dir},
+			context 	: $this,
+			dataType	: 'json',
+			beforeSend	: function(){this.find('a[data-file="'+dir+'"]').parent().addClass('wait');},
+			success		: function(datas){
+				ret = '<ul class="jaofiletree" style="display: none">';
+				for(ij=0; ij<datas.length; ij++){
+					if(datas[ij].type=='dir'){
+						classe = 'directory collapsed';
+					}else{
+						classe = 'file ext_'+datas[ij].ext;
+					}
+					ret += '<li class="'+classe+'">'                    
+					if(options.usecheckboxes===true || (options.usecheckboxes==='dirs' && datas[ij].type=='dir') || (options.usecheckboxes==='files' && datas[ij].type=='file')){
+						ret += '<input type="checkbox" data-file="'+dir+datas[ij].file+'" data-type="'+datas[ij].type+'" checked="checked"/>';
+					}
+					else{
+						ret += '<input disabled="disabled" type="checkbox" data-file="'+dir+datas[ij].file+'" data-type="'+datas[ij].type+'"/>';
+					}
+					ret += '<a href="#" data-file="'+dir+datas[ij].file+'/" data-type="'+datas[ij].type+'">'+datas[ij].file+'</a>';
+					ret += '</li>';
+				}
+				ret += '</ul>';
 				
-                ret = '<ul class="jaofiletree" style="display: none">';
-                for(ij=0; ij<datas.length; ij++){
-                    if(datas[ij].type=='dir'){
-                        classe = 'directory collapsed';
-                    }else{
-                        classe = 'file ext_'+datas[ij].ext;
-                    }
-                    ret += '<li class="'+classe+'">'                    
-                    if(options.usecheckboxes===true || (options.usecheckboxes==='dirs' && datas[ij].type=='dir') || (options.usecheckboxes==='files' && datas[ij].type=='file')){
-                        ret += '<input type="checkbox" data-file="'+dir+datas[ij].file+'" data-type="'+datas[ij].type+'" checked="checked"/>';
-                    }
-                    else{
-                        ret += '<input disabled="disabled" type="checkbox" data-file="'+dir+datas[ij].file+'" data-type="'+datas[ij].type+'"/>';
-                    }
-                    ret += '<a href="#" data-file="'+dir+datas[ij].file+'/" data-type="'+datas[ij].type+'">'+datas[ij].file+'</a>';
-                    ret += '</li>';
-                }
-                ret += '</ul>';
-                
-                this.find('a[data-file="'+dir+'"]').parent().removeClass('wait').removeClass('collapsed').addClass('expanded');
-                this.find('a[data-file="'+dir+'"]').after(ret);
+				this.find('a[data-file="'+dir+'"]').parent().removeClass('wait').removeClass('collapsed').addClass('expanded');
+				this.find('a[data-file="'+dir+'"]').after(ret);
 				
-                this.find('a[data-file="'+dir+'"]').next().slideDown(options.expandSpeed,options.expandEasing);
+				this.find('a[data-file="'+dir+'"]').next().slideDown(options.expandSpeed,options.expandEasing);
 
-                if(options.usecheckboxes){
-					
-                    //this.find('li input[type="checkbox"]').attr('checked',null);
-                    //this.find('a[data-file="'+dir+'"]').prev(':not(:disabled)').attr('checked','checked');
-					
-                    this.find('a[data-file="'+dir+'"] + ul li input[type="checkbox"]:not(:disabled)').attr('checked','checked');
-                }
-
-                setevents();
-            }).done(function(){
-                //Trigger custom event
-                $this.trigger('afteropen');
-                $this.trigger('afterupdate');
-            });
+				if(options.usecheckboxes){
+					this.find('a[data-file="'+dir+'"] + ul li input[type="checkbox"]:not(:disabled)').attr('checked','checked');
+				}
+				setevents();
+			}
+		}).done(function(){
+			//Trigger custom event
+			$this.trigger('afteropen');
+			$this.trigger('afterupdate');
+		});
     }
 
     closedir = function(dir) {
+		console.log('close dir');
             $this.find('a[data-file="'+dir+'"]').next().slideUp(options.collapseSpeed,options.collapseEasing,function(){$(this).remove();});
             $this.find('a[data-file="'+dir+'"]').parent().removeClass('expanded').addClass('collapsed');
             setevents();
@@ -161,7 +171,6 @@ var DELAY = 250, eClicks = 0, cClicks = 0, eTimer = null, cTimer = null, eCur = 
 						}
 						r = r + ans;
 						$.post('php_scripts/files.php',{'action':'new_dir','name':r},function(data){
-							//fuck
 							console.log(data);
 						});
 					}
@@ -189,13 +198,18 @@ var DELAY = 250, eClicks = 0, cClicks = 0, eTimer = null, cTimer = null, eCur = 
 		});
         // checkbox check/uncheck
         $this.find('li input[type="checkbox"]').off('change').on('change', function() {
-            options.oncheck(this,$(this).is(':checked'), $(this).next().attr('data-type'),$(this).next().attr('data-file'));
+            
+			options.oncheck(this,$(this).is(':checked'), $(this).next().attr('data-type'),$(this).next().attr('data-file'));
+			
 			if($(this).is(':checked')){
+				
                 $this.trigger('check');
             }else{
+				
                 $this.trigger('uncheck');
             }
 			return false;
+			
         });
         // for collapse or expand elements
         $this.find('li.directory.collapsed a').on('click', function() {
@@ -253,7 +267,7 @@ var DELAY = 250, eClicks = 0, cClicks = 0, eTimer = null, cTimer = null, eCur = 
         if ( methods[method] ) {
             return methods[ method ].apply( this, Array.prototype.slice.call( arguments, 1 ));
         } else if ( typeof method === 'object' || ! method ) {
-            return methods.init.apply( this, arguments );
+			return methods.init.apply( this, arguments );
         } else {
             //error
         }    

@@ -23,6 +23,26 @@
 	if (!isset($file)){
 		
 	}
+	//tika('C:\xampp\htdocs\sap\docs\DMS\CV04N_FIND DOCUMENT.pdf');
+	
+	if (1==0){
+		$file = 'C:\xampp\htdocs\sap\docs\DMS\CV04N_FIND DOCUMENT.pdf';
+		$config = new Configuration($tika);
+		$config->setOutputFormat('html');
+		$config->setOutputEncoding('UTF-8');
+
+		$wrapper = new Wrapper($config);
+		$wrapper->addDocument(new Document('doc',$file));
+		$wrapper->execute();
+		
+		$document = $wrapper->getDocument('doc');
+		$metadata = $document->getMetadata();
+		echo $document->getRawContent();
+		echo '<hr>';
+		echo "<pre>";print_r($metadata);echo "</pre>";
+	}
+	
+	
 
 function tika($file){
 	
@@ -30,8 +50,8 @@ function tika($file){
 	
 	
 	$config = new Configuration($tika);
-	$config->setOutputFormat('html');
-	$config->setOutputEncoding('UTF8');
+	$config->setOutputFormat('xml');
+	$config->setOutputEncoding('UTF-8');
 
 	$wrapper = new Wrapper($config);
 	$wrapper->addDocument(new Document('doc',$file));
@@ -40,6 +60,15 @@ function tika($file){
 		
 		$document = $wrapper->getDocument('doc');
 		$content = $document->getRawContent();
+		
+		/*-----------------------------------------*/
+		/*-----------------------------------------*/
+		/*-----------------------------------------*/
+		$content = convert_smart_quotes($content);
+		/*-----------------------------------------*/
+		/*-----------------------------------------*/
+		/*-----------------------------------------*/
+		
 		$content = html_entity_decode($content);
 		$content = utf8_encode($content);
 		$content = preg_replace( "/\r|\n/", "", $content );
@@ -90,8 +119,21 @@ function tika($file){
 				$creator->setAttributeNode(new DOMAttr('name','creator'));
 			$title = $add->appendChild($xml->createElement('field', htmlentities($meta['title'])));
 				$title->setAttributeNode(new DOMAttr('name','title'));
-			$fileName = $add->appendChild($xml->createElement('field', $meta['fileName']));
+				
+			/*
+			$fileName = $add->appendChild($xml->createElement('field', wordReplace($meta['fileName'])));
 				$fileName->setAttributeNode(new DOMAttr('name','fileName'));
+			*/
+			
+			
+			$fileName = $add->appendChild($xml->createElement('field')); 
+			$fileName->appendChild($xml->createCDATASection($meta['fileName']));
+				$fileName->setAttributeNode(new DOMAttr('name','fileName'));
+			
+			
+			
+			
+
 			$lastModified = $add->appendChild($xml->createElement('field', $meta['lastModified']));
 				$lastModified->setAttributeNode(new DOMAttr('name','lastModified'));
 			$pageCount = $add->appendChild($xml->createElement('field', $meta['pageCount']));
@@ -101,16 +143,20 @@ function tika($file){
 			$bd = $add->appendChild($xml->createElement('field', $meta['baseDir']));
 				$bd->setAttributeNode(new DOMAttr('name','baseDir'));
 			
-			$aryContent = getData($content,'page');
-			//echo $content;
 			
+			
+			
+
+			
+			$aryContent = getData($content,'page');
+			
+			$temp = '';
 			foreach($aryContent as $val){
 				$name = $add->appendChild($xml->createElement('field')); 
-				$name->appendChild($xml->createCDATASection($val)); 
+				$name->appendChild($xml->createCDATASection($val));
 					$name->setAttributeNode(new DOMAttr('name','content'));
 				unset($name);
 			}
-
 			
 		$xml->formatOutput = true; 
 		
@@ -119,16 +165,31 @@ function tika($file){
 		
 		$xml->save($fullFile);
 		$str = 'Saved';
+		
 		exec('java -jar '.$post.' "'.$fullFile.'"');
 		$str .= ', uploaded "'.$fullFile.'"';
 		$str .= ' @ ' . round((microtime(true) - $time_start),3) . "s\n";
+		
+		unlink($fullFile);
 		return $str;
 		
-		//unlink($fullFile);
+		
 		
 	
 	unset($config,$wrapper,$file,$xml);
 	
+}
+
+function convert_smart_quotes($string){ 
+	$search = array('“','‘','’','”',' '); 
+    $replace = array('"',"'","'",'"',' '); 
+    return str_replace($search, $replace, $string); 
+}
+
+function wordReplace($s){
+	$search  = array('&');
+	$replace = array('and');
+	return str_replace($search,$replace,$s);
 }
 
 function getData($data,$class){

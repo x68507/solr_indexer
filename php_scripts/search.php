@@ -11,8 +11,9 @@
 	
 	if (!isset($_POST) || !isset($_POST['json'])) die;
 	
-	$host = $_SERVER['SERVER_NAME'];
-	
+	//$host = $_SERVER['SERVER_NAME'];
+	$host = $remote_ip;
+
 	header('Content-Type: text/xml'); 
 	echo "<?xml version='1.0' encoding='utf-8'?>";
 	echo "<xml>";
@@ -81,7 +82,9 @@
 				
 				//echo "<main>".$first_key."</main>";
 				foreach($ary as $key=>$val){
-					echo "<auto><![CDATA[".$key."]]></auto>";
+					if (mb_detect_encoding($key)=='ASCII') echo "<auto><![CDATA[".$key."]]></auto>";
+					//echo "<auto><![CDATA[".mb_detect_encoding($key).' || '.$key."]]></auto>";
+					
 					$dex++;
 					if ($dex>$maxAuto) break;
 				}
@@ -147,21 +150,21 @@
 					$temp = 'lastModified:['.($op=='lt'?'*':$d.'T00:00:00Z').' TO '.($op=='gt'?'*':$d2.'T23:59:59Z').']';
 					array_push($x,$temp);
 				}
+				$sort = '';
+				if (isset($json->{'sort'})){
+					$sort = '&sort='.$json->{'sort'}.'%20'.$json->{'sortDir'};
+				}
+				
 				echo "<op>$op</op>";
-				echo "<temp><![CDATA[".$temp."]]></temp>";
+				echo "<temp><![CDATA[".$remote_ip."]]></temp>";
 				$q = urlencode(implode(' AND ',$x));
 				
 				
 				
-				$url = 'http://'.$host.':8983/solr/collection1/select?q='.$q.$sub.$start.$rows.'&wt=json&indent=true';
-				//$url = 'http://'.$host.':8983/solr/collection1/select?q=coois'.$fl.'&wt=json&indent=true';
-				
-				//$url = 'http://localhost:8983/solr/collection1/select?q=coois&wt=json&indent=true';
-				//https://wiki.apache.org/solr/SolrRelevancyFAQ
-				
-				//most likely needs to use highlighting in order to find the index of a multivalued query
-				
+				$url = 'http://'.$host.':8983/solr/collection1/select?q='.$q.$sub.$start.$rows.'&wt=json&indent=true'.$sort;
+
 				if (strlen($url)==0) die;
+				
 				
 				echo "<url><![CDATA[".$url."]]></url>";
 				
@@ -169,7 +172,7 @@
 				$result = file_get_contents($url, 0, $context);
 				$response = json_decode($result,true);
 					
-					
+				
 					$tots = $response['response']['numFound'];
 					$e = $json->{'offset'}*$numRows+$numRows;
 					
@@ -178,7 +181,7 @@
 					echo "<pages>".ceil($tots/$numRows)."</pages>";
 					echo "<curPage>".$json->{'offset'}."</curPage>";
 					echo "<total>".$tots."</total>";
-					
+				
 					foreach($response['response']['docs'] as $val){
 						echo "<file>";
 							
@@ -188,7 +191,9 @@
 							echo "<lastModified>$val[lastModified]</lastModified>";
 							echo "<creator><![CDATA[".$val['creator']."]]></creator>";
 							echo "<baseDir>$val[baseDir]</baseDir>";
-							echo "<fileName>$val[fileName]</fileName>";
+							
+							echo "<fileName><![CDATA[".$val['fileName']."]]></fileName>";
+							
 							//echo "<needle>$term</needle>";
 							
 							//echo "<haystack><![CDATA[".$val['content'][0]."]]></haystack>";
@@ -198,6 +203,8 @@
 					}
 				
 				echo "<time>".round((microtime(true) - $time_start),2)."</time>";
+				
+				
 				break;
 		}
 	echo "</xml>";
