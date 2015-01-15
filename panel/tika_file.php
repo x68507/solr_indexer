@@ -140,7 +140,7 @@ function tika($file){
 				$pageCount->setAttributeNode(new DOMAttr('name','pageCount'));
 			$contentType = $add->appendChild($xml->createElement('field', $meta['contentType']));
 				$contentType->setAttributeNode(new DOMAttr('name','contentType'));
-			$bd = $add->appendChild($xml->createElement('field', $meta['baseDir']));
+			$bd = $add->appendChild($xml->createElement('field', $meta['baseDir'].'\\'));
 				$bd->setAttributeNode(new DOMAttr('name','baseDir'));
 			
 			

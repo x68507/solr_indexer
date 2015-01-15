@@ -49,7 +49,7 @@ var DELAY = 250, eClicks = 0, cClicks = 0, eTimer = null, cTimer = null, eCur = 
                 $this.html('<ul class="jaofiletree"><li class="drive directory collapsed selected">'+checkboxes+'<a href="#" data-file="'+options.root+'" data-type="dir">'+options.showroot+'</a></li></ul>');
             }
 			openfolder(options.root);
-			//$this.find('input[type="checkbox"]:eq(0)').prop('checked',true);
+			$this.find('input[type="checkbox"]:eq(0)').prop('checked',true);
 			options.afterload.apply(this);
         },
 		afterload : function(e){
@@ -107,8 +107,8 @@ var DELAY = 250, eClicks = 0, cClicks = 0, eTimer = null, cTimer = null, eCur = 
 			dataType	: 'json',
 			beforeSend	: function(){this.find('a[data-file="'+dir+'"]').parent().addClass('wait');},
 			success		: function(datas){
-				ret = '<ul class="jaofiletree" style="display: none">';
-				//ret = '<ul class="jaofiletree" >';
+				//ret = '<ul class="jaofiletree" style="display: none">';
+				ret = '<ul class="jaofiletree" >';
 				for(ij=0; ij<datas.length; ij++){
 					if(datas[ij].type=='dir'){
 						classe = 'directory collapsed';
@@ -130,7 +130,7 @@ var DELAY = 250, eClicks = 0, cClicks = 0, eTimer = null, cTimer = null, eCur = 
 				this.find('a[data-file="'+dir+'"]').parent().removeClass('wait').removeClass('collapsed').addClass('expanded');
 				this.find('a[data-file="'+dir+'"]').after(ret);
 				
-				this.find('a[data-file="'+dir+'"]').next().slideDown(options.expandSpeed,options.expandEasing);
+				//this.find('a[data-file="'+dir+'"]').next().slideDown(options.expandSpeed,options.expandEasing);
 				
 				if(options.usecheckboxes){
 					//this.find('a[data-file="'+dir+'"] + ul li input[type="checkbox"]:not(:disabled)').attr('checked','checked');
@@ -147,15 +147,16 @@ var DELAY = 250, eClicks = 0, cClicks = 0, eTimer = null, cTimer = null, eCur = 
     }
 
     closedir = function(dir) {
-		$this.find('a[data-file="'+dir+'"]').next().slideUp(options.collapseSpeed,options.collapseEasing,function(){$(this).remove();});
-		$this.find('a[data-file="'+dir+'"]').parent().removeClass('expanded').addClass('collapsed');
-		setevents();
-		
-		//Trigger custom event
-		$this.trigger('afterclose');
-		$this.trigger('afterupdate');
-		cb();
-		return false;
+		console.log('close dir');
+            $this.find('a[data-file="'+dir+'"]').next().slideUp(options.collapseSpeed,options.collapseEasing,function(){$(this).remove();});
+            $this.find('a[data-file="'+dir+'"]').parent().removeClass('expanded').addClass('collapsed');
+            setevents();
+            
+            //Trigger custom event
+            $this.trigger('afterclose');
+            $this.trigger('afterupdate');
+			cb();
+			return false;
             
     }
 
@@ -181,6 +182,11 @@ var DELAY = 250, eClicks = 0, cClicks = 0, eTimer = null, cTimer = null, eCur = 
 				return false;
 			}
 			options.onclick(this, $(this).attr('data-type'),$(this).attr('data-file'));
+            if(options.usecheckboxes && $(this).attr('data-type')=='file'){
+                    //$this.find('li input[type="checkbox"]').attr('checked',null);
+                   // $(this).prev(':not(:disabled)').attr('checked','checked');
+                   // $(this).prev(':not(:disabled)').trigger('check');
+            }
             if(options.canselect){
                 $this.find('li').removeClass('selected');
                 $(this).parent().addClass('selected');

@@ -3,10 +3,16 @@
 	if (!isset($_SESSION['uid']) || $_SESSION['uid']!=true){
 		header('Location: index.php');
 	}
+	require_once(realpath(__DIR__ .'/config.php'));
 
 ?>
 <html>
 	<head>
+		<?php
+			echo "<title>Panel: $pageTitle</title>";
+		
+		?>
+		<link rel="shortcut icon" href="../images/doc.png">
 		<script type='text/javascript' src='../extensions/jQuery_v1.11.1.js'></script>
 		<!--<script id='jscript' type='text/javascript' src='jscript.js'></script>-->
 		<link type='text/css' rel='stylesheet' href='stylesheet.css'/>

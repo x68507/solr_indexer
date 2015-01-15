@@ -8,7 +8,7 @@
 	}
 	$action = $_POST['action'];
 	
-	
+	$host = $remote_ip;
 	
 	switch($action){
 		case 'server_start':
@@ -135,7 +135,7 @@ function fncSchema(){
 	$sxe = new SimpleXMLElement($xmlSchema->asXML());
 	//arrays to check for SOLR modifications
 	$aryField = array('creator'=>0,'fileName'=>0,'lastModified'=>0,'pageCount'=>0,'contentType'=>0,'baseDir'=>0,
-		'fileNameSort'=>0,'baseDirSort'=>0);
+		'fileNameSort'=>0,'baseDirURL'=>0,'baseDirSort'=>0);
 	
 	//checking to see if XML node is present in schema file
 	foreach($xmlSchema->field as $field){
@@ -162,6 +162,10 @@ function fncSchema(){
 				case 'fileNameSort':
 					addNode('fileNameSort','alphaOnlySort',$sxe);
 					addNodeCopy('fileName','fileNameSort',$sxe);
+					break;
+				case 'baseDirURL':
+					addNode('baseDirURL','string',$sxe);
+					addNodeCopy('baseDir','baseDirURL',$sxe);
 					break;
 				case 'baseDirSort':
 					addNode('baseDirSort','alphaOnlySort',$sxe);

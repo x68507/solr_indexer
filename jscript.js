@@ -4,7 +4,7 @@ var admin = false;
 var base = location.protocol+'//'+location.hostname+location.pathname.replace(/[\\\/][^\\\/]*$/, '')+'/extensions/pdfjs/web/viewer.html?file=http://'+location.hostname+location.pathname.replace(/[\\\/][^\\\/]*$/, '');
 var root = '';
 var win;
-var f = false
+var f = false;
 var first = true;
 var timeout;
 var bSearch;
@@ -33,17 +33,12 @@ $(document).ready(function(){
 	
 	
 	if (get('url')){
-		var json = JSON.parse(decodeURIComponent(get('url')));
-		if (json['term']){
-			$('#search-box').val(json['term']);
-			sp('search',decodeURIComponent(get('url')));
-		}
-		
+		URLpopState();
 	}
 	
 	$('#search-box').on('blur',function(){
 		$('#search-bg').val('');
-	})
+	});
 	
 	h();
 	$(window).resize(function(){
@@ -69,8 +64,15 @@ $(document).ready(function(){
 	
 	$(document).on('click','.jaofiletree input',function(e){
 		$(this).parents().filter('input:eq(0)').prop('checked',false).prop('indeterminate',true);
-		$(this).parentsUntil('#jao').css('background','pink');
-		console.log($(this).parents().length)
+		var checked = $(this).prop('checked');
+		var that = this;
+		$(this).parentsUntil('#jao').each(function(e){
+			if ($(this).hasClass('directory') && this!=$(that).parent()[0]){
+				
+				$(this).find('input:eq(0)').prop('checked',checked).prop('indeterminate',!checked);
+			}
+		});
+		
 		/*
 		$(this).parentsUntil('#jao','li.directory input').css('background','pink')
 		console.log($(this).parentsUntil('#jao','li.directory').find('input').length);
@@ -78,7 +80,7 @@ $(document).ready(function(){
 	});
 	$(document).on('click','.page',function(){
 		var f = $('.page.active').index();
-		$('.page.active').removeClass('active')
+		$('.page.active').removeClass('active');
 		$(this).addClass('active');
 		if ($('.page.active').index()!=f){
 			page();
@@ -88,7 +90,7 @@ $(document).ready(function(){
 	
 	$(document).on('click','#search-left,#search-right',function(){
 		var f = $('.page.active').index();
-		if ($(this).attr('id')=='search-left' && $('.page.active').index()!=0){
+		if ($(this).attr('id')=='search-left' && $('.page.active').index()!==0){
 			var temp = $('.page:eq('+($('.page.active').index() - 1)+')');
 			$('.page.active').removeClass('active');
 			temp.addClass('active');
@@ -113,7 +115,7 @@ $(document).ready(function(){
 			ext = ext.substring(0,(ext.length-1));
 			if (type=='file' && ext=='pdf'){
 				var _file = base+root+encodeURIComponent(file.substring(0,(file.length-1)));
-				console.log(_file)
+				
 				if (ie8()){
 					var path = _file.split('file=');
 					_file = path[1];
@@ -126,7 +128,7 @@ $(document).ready(function(){
 			$('.directory.selected').removeClass('selected');
 			
 			if (file=='/'){
-				console.log('one')
+				
 				if (checked){
 					$('input[type="checkbox"]:not(:checked)').each(function(){$(this).prop('checked',true)});
 				}else{
@@ -141,6 +143,7 @@ $(document).ready(function(){
 			if (get('url')){
 				var json = JSON.parse(decodeURIComponent(get('url')));
 				if (json['folders']){
+				    
 					
 					$('.jaofiletree input[type="checkbox"]').prop('checked',false);
 					$('.jaofiletree input[type="checkbox"]:eq(0)').prop('indeterminate',true);
@@ -170,12 +173,11 @@ $(document).ready(function(){
 	
 	
 	$('#jao').on('afteropen',function(e){
+		
 		var jao = $('.jaofiletree:eq(1)');
 		
-		//$('#jao li.selected input').prop('checked',true);
-		$(' > li.expanded input',jao).prop('checked',true);
+		$(' > li.selected input',jao).prop('checked',true);
 		
-		//$('.jaofiletree:eq(1) > li.collapsed').find('input').prop('checked',false);
 		if ($('> li.expanded',jao).length==0 && $('> li input:checked',jao).length==$('> li',jao).length){
 		
 		}else{
@@ -183,6 +185,7 @@ $(document).ready(function(){
 		}
 		$('input[type="checkbox"][disabled="disabled"]').remove();
 		cb();
+		
 		
 	});
 	$('#jao').on('afterclose',function(e){
@@ -252,7 +255,35 @@ $(document).ready(function(){
 				}
 			}
 		}else{
-			if (e.ctrlKey && e.shiftKey && e.keyCode==70){
+			//up/down arrows for selecting 
+			var dex = 0;
+			if (e.keyCode==40){
+				if ($('#search-body .sr-div .sr-row.active').length===0 || $('#search-body .sr-div .sr-row.active').closest('.sr-div').index()+1 == $('#search-body .sr-div').length){
+					$('#search-body .sr-div .sr-row.active').removeClass('active');
+					$('#search-body .sr-div:eq(0)').find('.sr-row').addClass('active');	
+				}else{
+					dex = $('#search-body .sr-div .sr-row.active').closest('.sr-div').index();
+					$('#search-body .sr-div .sr-row.active').removeClass('active');
+					$('#search-body .sr-div:eq('+(dex+1)+')').find('.sr-row').addClass('active');
+				}
+			}else if(e.keyCode==38){
+				if ($('#search-body .sr-div .sr-row.active').length===0 || $('#search-body .sr-div .sr-row.active').closest('.sr-div').index()===0){
+					$('#search-body .sr-div .sr-row.active').removeClass('active');
+					$('#search-body .sr-div:eq('+($('#search-body .sr-div').length-1)+')').find('.sr-row').addClass('active');
+				}else{
+					dex = $('#search-body .sr-div .sr-row.active').closest('.sr-div').index();
+					$('#search-body .sr-div .sr-row.active').removeClass('active');
+					$('#search-body .sr-div:eq('+(dex-1)+')').find('.sr-row').addClass('active');
+				}
+			}else if(e.keyCode==13 && $('#search-body .sr-div .sr-row.active').length>0){
+				var that = $('#search-body .sr-div .sr-row.active').closest('.sr-div');
+				var _file = base + root +  that.attr('data-base') +'/' + encodeURIComponent(that.attr('data-file'));
+				var background = e.ctrlKey;
+				openFile(_file,background);
+				$('#search-body .sr-div .sr-row.active').removeClass('active');
+				return false;
+				//fucker
+			}else if (e.ctrlKey && e.shiftKey && e.keyCode==70){
 				$('#search-box').focus();
 			}else if(!$('#search-box').is(':focus') && e.shiftKey && e.keyCode==191){
 				$('body').append('<div id="helper">This is the helper document</div>');
@@ -292,15 +323,7 @@ $(document).ready(function(){
 		$(this).addClass('sbactive');
 		
 		var _file = base + root +  $(this).attr('data-base') +'/' + encodeURIComponent($(this).attr('data-file'));
-		if (ie8()){
-			var path = _file.split('file=');
-			_file = path[1];
-		}
-		win = window.open(_file,'sap');
-		win.focus();
-		
-		
-		
+		openFile(_file);
 	});
 	
 	$(document).on('click','#search-header .sr-div div',function(e){
@@ -309,7 +332,7 @@ $(document).ready(function(){
 		$(this).addClass('shactive');
 		var type = ($(this).hasClass('numeric')?'numeric':'text');
 		var dir  = ($(this).hasClass('asc')?'asc':'desc');
-		console.log($(this).attr('data-field') + ' || dir: ' + dir);
+		
 		
 		//sortUsingNestedText($('#search-body'),'div','div.'+searchClass(this,'sr-'),type,dir);
 		$(this).toggleClass('asc desc')
@@ -420,8 +443,72 @@ $(document).ready(function(){
 		fncHistory('url','null',/url=([^&]*)/);
 	});
 	
+	
+	if (window.history.replaceState){
+		window.onpopstate = function(event){
+			$('#search-body').empty();
+			if (get('url')){
+				URLpopState();
+			}else{
+				$('.sai').val('');
+				$('#search-time,#search-footer').html('');
+			}
+    	}
+	}
 	//END OF DOCUMENT READY
 });
+
+function openFile(_file,background){
+	background = typeof background !== 'undefined' && background == true ? '_blank' : 'sap';
+	
+	if (ie8()){
+		var path = _file.split('file=');
+		_file = path[1];
+	}
+	
+	
+	
+	if (background=='_blank'){
+		window.open(_file,'_blank');
+		window.blur();
+		window.focus();
+	}else{
+		window.open(_file,'sap');
+	}
+}
+
+function URLpopState(){
+    var json = JSON.parse(decodeURIComponent(get('url')));
+	
+	if (json.term) $('#search-box').val(json.term);
+	if (json.creator) $('#s-creator').val(json.creator);
+	if (json.title) $('#s-title').val(json.title)
+	
+	if (json.date && json['date-op']){
+	    $('#s-date').val(json.date);
+        $('#s-db span.active').removeClass('active');
+        $('#s-db span[data-op="'+json['date-op']+'"]').addClass('active');
+        if (json.date2){
+            $('#s-date,#s-date2').addClass('half');
+            $('#s-date2').removeClass('h').val(json.date2);
+        }
+	}
+	if (json.page && json['page-op']){
+	    $('#s-page').val(json.page);
+        $('#s-pb span.active').removeClass('active');
+        $('#s-pb span[data-op="'+json['page-op']+'"]').addClass('active');
+        if (json.page2){
+            $('#s-page,#s-page2').addClass('half');
+            $('#s-page2').removeClass('h').val(json.page2);
+        }
+	}
+	
+	
+	if (json.term || json.title || json.creator || json.date || json.page){
+	    sp('search',decodeURIComponent(get('url')));
+	}
+    
+}
 
 function sleep(milliseconds) {
   var start = new Date().getTime();
@@ -507,10 +594,8 @@ function page(){
 
 function search(o){
 	if (typeof o !== 'undefined'){
-		console.log('one')
 		var offset = ($('.page.active').length>0?(parseInt($('.page.active').text())-1):0);
 	}else{
-		console.log('two')
 		var offset = 0;
 	}
 	
@@ -573,12 +658,14 @@ function search(o){
 	
 	var json = JSON.stringify(obj);
 	
-	console.log(json);
+	
 	$('#search-time,#search-body').html('&nbsp;');
 	
 	sa_remove();
 	
 	sp('search',json);
+	//saves search in the URL
+	fncHistory('url',json,/url=([^&]*)/);
 }
 
 
@@ -656,9 +743,6 @@ function sp(action,json){
 				//alert(lm)
 				$('.sr-div:last').append('<div class="sr-lm nus ctx">'+(lm.getFullYear() +'-'+ _2(lm.getMonth()+1) +'-'+ _2(lm.getDate()))+'</lm>');
 		});
-		//saves search in the URL
-		fncHistory('url',json,/url=([^&]*)/);
-		//fncHistory('_ftf','null',/_ftf=([^&]*)/,'replace');
 	},'xml');
 }
 
@@ -666,12 +750,13 @@ function sp(action,json){
 function fncHistory(key,val,regex){
 	var loc = (window.history.replaceState?location.search:location.hash.substring(1));
 	val = encodeURIComponent(val);
-	var str = (loc.search(regex)>-1?(val=='null'?loc.replace(new RegExp('(&|\\?)' + regex.source),''):loc.replace(regex,key+'='+val)):(val=='null'?'':(loc.length==0?'?':loc+'&')+key+'='+val) );
+	var str = (loc.search(regex)>-1?(val=='null'?loc.replace(new RegExp('(&|\\?)' + regex.source),''):loc.replace(regex,key+'='+val)):(val=='null'?'':(loc.length===0?'?':loc+'&')+key+'='+val) );
 		
 	if (window.history.replaceState){
+		if (str.length===0) str = window.location.pathname.replace(/^.*[\\\/]/, '');
+		//window.history.replaceState({},'',str);
+		window.history.pushState({},'',str);
 		
-		if (str.length==0) str = window.location.pathname.replace(/^.*[\\\/]/, '');
-		window.history.replaceState({},'',str);
 	}
 	
 }
@@ -776,3 +861,20 @@ function c(t){
 }
 
 function selectText(element){var doc = document,text = $(element)[0],range, selection;if (doc.body.createTextRange) {range = document.body.createTextRange();range.moveToElementText(text);range.select();} else if (window.getSelection) {selection = window.getSelection();range = document.createRange();range.selectNodeContents(text);selection.removeAllRanges();selection.addRange(range);}}
+function rtrim(str, charlist) {
+  //  discuss at: http://phpjs.org/functions/rtrim/
+  // original by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
+  //    input by: Erkekjetter
+  //    input by: rem
+  // improved by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
+  // bugfixed by: Onno Marsman
+  // bugfixed by: Brett Zamir (http://brett-zamir.me)
+  //   example 1: rtrim('    Kevin van Zonneveld    ');
+  //   returns 1: '    Kevin van Zonneveld'
+
+  charlist = !charlist ? ' \\s\u00A0' : (charlist + '')
+    .replace(/([\[\]\(\)\.\?\/\*\{\}\+\$\^\:])/g, '\\$1');
+  var re = new RegExp('[' + charlist + ']+$', 'g');
+  return (str + '')
+    .replace(re, '');
+}

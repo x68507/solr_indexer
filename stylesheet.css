@@ -107,7 +107,7 @@ input[type="checkbox"]:disabled {display:none}
 .jaofiletree{text-overflow:ellipsis}
 .h{display:none}
 .trh{display:none;background:pink !important}
-.sr-row.active{background:#4484F1}
+.sr-row.active{background:#C53929}
 
 .ellipsis{overflow:hidden;width:80%;width:calc(100% - 20px);direction:rtl; TEXT-ALIGN:right;margin-left:15px;white-space: nowrap;}
 .ellipsis:after{position:absolute;left:0px; content:"...";}

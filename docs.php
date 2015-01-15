@@ -36,7 +36,7 @@
 		<div id='jao'></div>
 		<div id='container-search'>
 			<div id='search-header'>
-				<input type='text' id='search-box' placeholder='Search Manuals' class='sai si'>
+				<input type='text' id='search-box' placeholder='' class='sai si'>
 				<input type='text' id='search-bg' value=''>
 				<div id='search-dd' class='hover nus'>&nbsp;</div>
 				<input id='search-button' class='hover bb blue btr bbr bbs' type='button' value='Search'><div id='search-answer'>

@@ -11,5 +11,5 @@
 		$numRows	= $xml->numRows;
 		$schema		= $xml->schema;
 		$jetty		= $xml->jetty;
-		$remote_ip	= $xml->remote_ip;
+		$remote_ip	= (isset($xml->remote_ip)?$xml->remote_ip:'localhost');
 ?>

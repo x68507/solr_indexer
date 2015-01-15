@@ -121,8 +121,11 @@
 				
 				//Generates information regarding searching in a subdirectory
 				$sub = '';
+				$tempFolder = '';
 				if (isset($json->{'folders'})){
-					$sub = ' AND (baseDir:"'.implode((count($json->{'folders'})==1?'':'" OR baseDir:"'),$json->{'folders'}).'")';
+					$tempFolder = implode(' || ',($json->{'folders'}));
+					//http://localhost:8983/solr/collection1/select?q=a+AND+%28baseDir%3A%22%5C%5C1+SAP+General+Training%22%29&start=0&rows=25&wt=json&indent=true
+					$sub = ' AND (baseDir:"'.solrEscape(implode((count($json->{'folders'})==1?'':'" OR baseDir:"'),($json->{'folders'}))).'")';
 					$sub = urlencode($sub);
 				}
 				
@@ -156,7 +159,8 @@
 				}
 				
 				echo "<op>$op</op>";
-				echo "<temp><![CDATA[".$remote_ip."]]></temp>";
+				
+				echo "<temp><![CDATA[".solrEscape($tempFolder)."]]></temp>";
 				$q = urlencode(implode(' AND ',$x));
 				
 				
@@ -209,7 +213,17 @@
 		}
 	echo "</xml>";
 	
+function solrEscape($str){
+	//[\+-&&!(){}[]^~]
 	
+	
+	//$regex = "/[A-Za-z]oo\b/";
+	$regex = '`/`';
+	$replace = '\\\\\\';
+	$str = preg_replace($regex, $replace, $str);
+	
+	return $str;
+}
 	
 
 function strposa($haystack, $needle, $offset=0) {
