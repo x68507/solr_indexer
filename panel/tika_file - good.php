@@ -1,17 +1,4 @@
 <?php
-	$regex = <<<'END'
-/
-  (
-    (?: [\x00-\x7F]               # single-byte sequences   0xxxxxxx
-    |   [\xC0-\xDF][\x80-\xBF]    # double-byte sequences   110xxxxx 10xxxxxx
-    |   [\xE0-\xEF][\x80-\xBF]{2} # triple-byte sequences   1110xxxx 10xxxxxx * 2
-    |   [\xF0-\xF7][\x80-\xBF]{3} # quadruple-byte sequence 11110xxx 10xxxxxx * 3 
-    ){1,100}                      # ...one or more times
-  )
-| ( [\x80-\xBF] )                 # invalid byte in range 10000000 - 10111111
-| ( [\xC0-\xFF] )                 # invalid byte in range 11000000 - 11111111
-/x
-END;
 	require_once(realpath(__DIR__ .'\config.php'));
 	$nl = "\n";
 	
@@ -58,7 +45,7 @@ END;
 
 function tika($file){
 	
-	global $ext,$tika,$post,$baseDir,$time_start,$parent,$regex;
+	global $ext,$tika,$post,$baseDir,$time_start,$parent;
 	
 	
 	$config = new Configuration($tika);
@@ -71,7 +58,7 @@ function tika($file){
 	
 		
 		$document = $wrapper->getDocument('doc');
-		$content = $document->getContent();
+		$content = $document->getRawContent();
 		
 		/*-----------------------------------------*/
 		/*-----------------------------------------*/
@@ -83,11 +70,10 @@ function tika($file){
 		
 		$content = html_entity_decode($content);
 		$content = utf8_encode($content);
-		$content = preg_replace( "/\r|\n/", " ", $content );
+		$content = preg_replace( "/\r|\n/", "", $content );
 		$content = preg_replace("/\]\]\>/","",$content);
 		$content = preg_replace('/\s+/', ' ',$content);
 		$content = str_replace(array('&nbsp;'),' ',$content);
-		$content = preg_replace_callback($regex, "utf8replacer", $content);
 		
 		
 		$metadata = $document->getMetadata();
@@ -128,27 +114,10 @@ function tika($file){
 			
 			$id = $add->appendChild($xml->createElement('field',$meta['md5']));
 				$id->setAttributeNode(new DOMAttr('name','id'));
-			/*
 			$creator = $add->appendChild($xml->createElement('field', $meta['creator']));
 				$creator->setAttributeNode(new DOMAttr('name','creator'));
-			
 			$title = $add->appendChild($xml->createElement('field', htmlentities($meta['title'])));
 				$title->setAttributeNode(new DOMAttr('name','title'));
-			
-			*/
-			
-			$creator = $add->appendChild($xml->createElement('field')); 
-			$creator->appendChild($xml->createCDATASection($meta['creator']));
-				$creator->setAttributeNode(new DOMAttr('name','creator'));
-			
-			$title = $add->appendChild($xml->createElement('field')); 
-			$title->appendChild($xml->createCDATASection($meta['title']));
-				$title->setAttributeNode(new DOMAttr('name','title'));
-						
-			$bd = $add->appendChild($xml->createElement('field')); 
-			$bd->appendChild($xml->createCDATASection($meta['baseDir'].'\\'));
-				$bd->setAttributeNode(new DOMAttr('name','baseDir'));
-				
 			$fileName = $add->appendChild($xml->createElement('field')); 
 			$fileName->appendChild($xml->createCDATASection($meta['fileName']));
 				$fileName->setAttributeNode(new DOMAttr('name','fileName'));
@@ -158,20 +127,29 @@ function tika($file){
 				$pageCount->setAttributeNode(new DOMAttr('name','pageCount'));
 			$contentType = $add->appendChild($xml->createElement('field', $meta['contentType']));
 				$contentType->setAttributeNode(new DOMAttr('name','contentType'));
-			
+			$bd = $add->appendChild($xml->createElement('field', $meta['baseDir'].'\\'));
+				$bd->setAttributeNode(new DOMAttr('name','baseDir'));
 			
 			$name = $add->appendChild($xml->createElement('field'));
-				$name->appendChild($xml->createCDATASection($content));
+				$name->appendChild($xml->createCDATASection($val));
 					$name->setAttributeNode(new DOMAttr('name','content'));
 				unset($name);
+			/*
+			$aryContent = getData($content,'page');
+			
+			$temp = '';
+			foreach($aryContent as $val){
+				$name = $add->appendChild($xml->createElement('field'));
+				$name->appendChild($xml->createCDATASection($val));
+					$name->setAttributeNode(new DOMAttr('name','content'));
+				unset($name);
+			}
+			*/
+			
 		$xml->formatOutput = true; 
 		
 		//$fullFile = $parent.'\\'.$meta['fileName'].'.xml';
-		if (strlen(trim($content))==0){
-			$fullFile = $file.' - THIS_IS_EMPTY.xml';
-		}else{
-			$fullFile = $file.'.xml';
-		}
+		$fullFile = $file.'.xml';
 		
 		$xml->save($fullFile);
 		$str = 'Saved';
@@ -180,7 +158,7 @@ function tika($file){
 		$str .= ', uploaded "'.$fullFile.'"';
 		$str .= ' @ ' . round((microtime(true) - $time_start),3) . "s\n";
 		
-		unlink($fullFile);
+		//unlink($fullFile);
 		return $str;
 		
 		
@@ -189,25 +167,6 @@ function tika($file){
 	unset($config,$wrapper,$file,$xml);
 	
 }
-
-
-function utf8replacer($captures) {
-  if ($captures[1] != "") {
-    // Valid byte sequence. Return unmodified.
-    return $captures[1];
-  }
-  elseif ($captures[2] != "") {
-    // Invalid byte of the form 10xxxxxx.
-    // Encode as 11000010 10xxxxxx.
-    return "\xC2".$captures[2];
-  }
-  else {
-    // Invalid byte of the form 11xxxxxx.
-    // Encode as 11000011 10xxxxxx.
-    return "\xC3".chr(ord($captures[3])-64);
-  }
-}
-//preg_replace_callback($regex, "utf8replacer", $text);
 
 function convert_smart_quotes($string){ 
 	$search = array('“','‘','’','”',' '); 

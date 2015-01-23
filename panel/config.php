@@ -12,4 +12,6 @@
 		$schema		= $xml->schema;
 		$jetty		= $xml->jetty;
 		$remote_ip	= (isset($xml->remote_ip)?$xml->remote_ip:'localhost');
+		
+		$ext = array('pdf','docx','pptx','doc');
 ?>

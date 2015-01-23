@@ -105,8 +105,9 @@ var DELAY = 250, eClicks = 0, cClicks = 0, eTimer = null, cTimer = null, eCur = 
 			data		: {dir : dir},
 			context 	: $this,
 			dataType	: 'json',
-			beforeSend	: function(){this.find('a[data-file="'+dir+'"]').parent().addClass('wait');},
+			beforeSend	: function(){console.log(dir);this.find('a[data-file="'+dir+'"]').parent().addClass('wait');},
 			success		: function(datas){
+				
 				ret = '<ul class="jaofiletree" style="display: none">';
 				//ret = '<ul class="jaofiletree" >';
 				for(ij=0; ij<datas.length; ij++){
@@ -137,6 +138,7 @@ var DELAY = 250, eClicks = 0, cClicks = 0, eTimer = null, cTimer = null, eCur = 
 				}
 				
 				setevents();
+				
 				
 			}
 		}).done(function(){

@@ -113,15 +113,21 @@ $(document).ready(function(){
 			if (file === undefined) return false;
 			var ext = file.substring(file.lastIndexOf('.')+1);
 			ext = ext.substring(0,(ext.length-1));
-			if (type=='file' && ext=='pdf'){
-				var _file = base+root+encodeURIComponent(file.substring(0,(file.length-1)));
-				
-				if (ie8()){
-					var path = _file.split('file=');
-					_file = path[1];
+			
+			if (type=='file'){
+				if (ext=='pdf'){
+					var _file = base+root+encodeURIComponent(file.substring(0,(file.length-1)));
+					if (ie8()){
+						var path = _file.split('file=');
+						_file = path[1];
+					}
+					win = window.open(_file,'sap');
+					win.focus();
+				}else{
+					var file = root+encodeURIComponent(rtrim(file,'/'));
+					var url = 'php_scripts/download_file.php?f='+file;
+					window.open(url);
 				}
-				win = window.open(_file,'sap');
-				win.focus();
 			}
 		}
 		,'oncheck':function(elem,checked,type,file){		
@@ -277,12 +283,13 @@ $(document).ready(function(){
 				}
 			}else if(e.keyCode==13 && $('#search-body .sr-div .sr-row.active').length>0){
 				var that = $('#search-body .sr-div .sr-row.active').closest('.sr-div');
-				var _file = base + root +  that.attr('data-base') +'/' + encodeURIComponent(that.attr('data-file'));
+				var _file =  that.attr('data-base') +'/' + encodeURIComponent(that.attr('data-file'));
+				
 				var background = e.ctrlKey;
+				
+				console.log(that.attr('data-base') +'/' + encodeURIComponent(that.attr('data-file')));
 				openFile(_file,background);
-				$('#search-body .sr-div .sr-row.active').removeClass('active');
 				return false;
-				//fucker
 			}else if (e.ctrlKey && e.shiftKey && e.keyCode==70){
 				$('#search-box').focus();
 			}else if(!$('#search-box').is(':focus') && e.shiftKey && e.keyCode==191){
@@ -322,7 +329,8 @@ $(document).ready(function(){
 		$('#search-body .sr-div').removeClass('sbactive');
 		$(this).addClass('sbactive');
 		
-		var _file = base + root +  $(this).attr('data-base') +'/' + encodeURIComponent($(this).attr('data-file'));
+		//var _file = base + root +  $(this).attr('data-base') +'/' + encodeURIComponent($(this).attr('data-file'));
+		var _file = $(this).attr('data-base')  + encodeURIComponent($(this).attr('data-file'));
 		openFile(_file);
 	});
 	
@@ -461,20 +469,35 @@ $(document).ready(function(){
 function openFile(_file,background){
 	background = typeof background !== 'undefined' && background == true ? '_blank' : 'sap';
 	
+	//var ext = _file.split('.')[_file.split('.').length];
+	var ext = _file.split('.')[_file.split('.').length-1];
+	
+	console.log(_file);
+
+	//var _file = base + root +  that.attr('data-base') +'/' + encodeURIComponent(that.attr('data-file'));
 	if (ie8()){
 		var path = _file.split('file=');
 		_file = path[1];
 	}
-	
-	
-	
-	if (background=='_blank'){
+
+	if (ext=='pdf'){
+		_file = base + root + _file;
 		window.open(_file,'_blank');
 		window.blur();
 		window.focus();
 	}else{
-		window.open(_file,'sap');
+		_file = root + _file;
+		var url = 'php_scripts/download_file.php?f='+_file;
+		window.open(url);
 	}
+	/*
+	if (background=='_blank'){
+		
+		
+	}else{
+		
+	}
+	*/
 }
 
 function URLpopState(){
@@ -659,7 +682,7 @@ function search(o){
 	var json = JSON.stringify(obj);
 	
 	
-	$('#search-time,#search-body').html('&nbsp;');
+	$('#search-time,#search-body').html('');
 	
 	sa_remove();
 	
@@ -730,8 +753,11 @@ function sp(action,json){
 		$('#search-time').html(s+' - '+ e + ' of ' + t +' Result'+(l!=1?'s':'')+' (' + $(data).find('time').text()  +' seconds)');
 
 		$(data).find('file').each(function(){
-			$('#search-body').append('<div class="sr-div hover" data-base="'+$(this).find('baseDir').text()+'" data-file="'+$(this).find('fileName').text()+'"></div>');
+			var file = $(this).find('fileName').text();
+			$('#search-body').append('<div class="sr-div hover" data-base="'+$(this).find('baseDir').text()+'" data-file="'+file+'"></div>');
+				var ext = file.split('.')[file.split('.').length-1];
 				$('.sr-div:last').append('<div class="sr-row">&nbsp;</div>');
+				$('.sr-div:last').append('<div class="ext_'+ext+'">&nbsp;&nbsp;&nbsp;&nbsp;</div>');
 				$('.sr-div:last').append('<div class="sr-title nus ctx" title="'+$(this).find('fileName').text()+'">'+$(this).find('fileName').text()+'</div>');
 				$('.sr-div:last').append('<div class="sr-file nus ctx">'+$(this).find('baseDir').text()+'</div>');
 				//$('.sr-div:last').append('<div class="sr-count nus">'+$(this).find('count').text()+'</div>');
@@ -743,6 +769,8 @@ function sp(action,json){
 				//alert(lm)
 				$('.sr-div:last').append('<div class="sr-lm nus ctx">'+(lm.getFullYear() +'-'+ _2(lm.getMonth()+1) +'-'+ _2(lm.getDate()))+'</lm>');
 		});
+		
+		$('#search-box').blur();
 	},'xml');
 }
 

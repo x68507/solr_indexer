@@ -13,6 +13,7 @@ ul.jaofiletree li.selected > a {background: #CED;}
 .jaofiletree li.wait { background: url(img/spinner.gif) left top no-repeat; }
 .jaofiletree li.plus { background: url(img/plus.png) left top no-repeat; }
 /* File Extensions*/
+
 .jaofiletree li.ext_3gp { background: url(img/film.png) left top no-repeat; }
 .jaofiletree li.ext_afp { background: url(img/code.png) left top no-repeat; }
 .jaofiletree li.ext_afpa { background: url(img/code.png) left top no-repeat; }
@@ -73,6 +74,65 @@ ul.jaofiletree li.selected > a {background: #CED;}
 .jaofiletree li.ext_xml { background: url(img/code.png) left top no-repeat; }
 .jaofiletree li.ext_zip { background: url(img/zip.png) left top no-repeat; }
 
+.ext_3gp { background: url(img/film.png) left top no-repeat; }
+.ext_afp { background: url(img/code.png) left top no-repeat; }
+.ext_afpa { background: url(img/code.png) left top no-repeat; }
+.ext_asp { background: url(img/code.png) left top no-repeat; }
+.ext_aspx { background: url(img/code.png) left top no-repeat; }
+.ext_avi { background: url(img/film.png) left top no-repeat; }
+.ext_bat { background: url(img/application.png) left top no-repeat; }
+.ext_bmp { background: url(img/picture.png) left top no-repeat; }
+.ext_c { background: url(img/code.png) left top no-repeat; }
+.ext_cfm { background: url(img/code.png) left top no-repeat; }
+.ext_cgi { background: url(img/code.png) left top no-repeat; }
+.ext_com { background: url(img/application.png) left top no-repeat; }
+.ext_cpp { background: url(img/code.png) left top no-repeat; }
+.ext_css { background: url(img/css.png) left top no-repeat; }
+.ext_doc,.ext_docx { background: url(img/doc.png) left top no-repeat; }
+.ext_exe { background: url(img/application.png) left top no-repeat; }
+.ext_gif { background: url(img/picture.png) left top no-repeat; }
+.ext_fla { background: url(img/flash.png) left top no-repeat; }
+.ext_h { background: url(img/code.png) left top no-repeat; }
+.ext_htm { background: url(img/html.png) left top no-repeat; }
+.ext_html { background: url(img/html.png) left top no-repeat; }
+.ext_jar { background: url(img/java.png) left top no-repeat; }
+.ext_jpg { background: url(img/picture.png) left top no-repeat; }
+.ext_jpeg { background: url(img/picture.png) left top no-repeat; }
+.ext_js { background: url(img/script.png) left top no-repeat; }
+.ext_lasso { background: url(img/code.png) left top no-repeat; }
+.ext_log { background: url(img/txt.png) left top no-repeat; }
+.ext_m4p { background: url(img/music.png) left top no-repeat; }
+.ext_mov { background: url(img/film.png) left top no-repeat; }
+.ext_mp3 { background: url(img/music.png) left top no-repeat; }
+.ext_mp4 { background: url(img/film.png) left top no-repeat; }
+.ext_mpg { background: url(img/film.png) left top no-repeat; }
+.ext_mpeg { background: url(img/film.png) left top no-repeat; }
+.ext_msg { background: url(img/message.png) left top no-repeat; }
+.ext_ogg { background: url(img/music.png) left top no-repeat; }
+.ext_pcx { background: url(img/picture.png) left top no-repeat; }
+.ext_pdf { background: url(img/pdf.png) left top no-repeat; }
+.ext_php { background: url(img/php.png) left top no-repeat; }
+.ext_png { background: url(img/picture.png) left top no-repeat; }
+.ext_ppt,.ext_pptx { background: url(img/ppt.png) left top no-repeat; }
+.ext_psd { background: url(img/psd.png) left top no-repeat; }
+.ext_pl { background: url(img/script.png) left top no-repeat; }
+.ext_py { background: url(img/script.png) left top no-repeat; }
+.ext_rb { background: url(img/ruby.png) left top no-repeat; }
+.ext_rbx { background: url(img/ruby.png) left top no-repeat; }
+.ext_rhtml { background: url(img/ruby.png) left top no-repeat; }
+.ext_rpm { background: url(img/linux.png) left top no-repeat; }
+.ext_ruby { background: url(img/ruby.png) left top no-repeat; }
+.ext_sql { background: url(img/db.png) left top no-repeat; }
+.ext_swf { background: url(img/flash.png) left top no-repeat; }
+.ext_tif { background: url(img/picture.png) left top no-repeat; }
+.ext_tiff { background: url(img/picture.png) left top no-repeat; }
+.ext_txt { background: url(img/txt.png) left top no-repeat; }
+.ext_vb { background: url(img/code.png) left top no-repeat; }
+.ext_wav { background: url(img/music.png) left top no-repeat; }
+.ext_wmv { background: url(img/film.png) left top no-repeat; }
+.ext_xls ,.ext_xlsx{ background: url(img/xls.png) left top no-repeat; }
+.ext_xml { background: url(img/code.png) left top no-repeat; }
+.ext_zip { background: url(img/zip.png) left top no-repeat; }
 /* Only for exemple */
 
 body {margin: 0;padding: 0;font-family: 'Archivo Narrow', helvetica, sans-serif;color: #333;}
