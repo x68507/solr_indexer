@@ -180,7 +180,7 @@ function tika($file){
 		$str .= ', uploaded "'.$fullFile.'"';
 		$str .= ' @ ' . round((microtime(true) - $time_start),3) . "s\n";
 		
-		//unlink($fullFile);
+		unlink($fullFile);
 		return $str;
 		
 		

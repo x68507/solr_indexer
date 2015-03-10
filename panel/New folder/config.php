@@ -1,7 +1,7 @@
 <?php
 	libxml_use_internal_errors(true);
 	$xml = simplexml_load_file(realpath(dirname(__FILE__).'\config.xml'));
-		
+
 		$pageTitle	= $xml->title;
 		$tika		= $xml->tika;
 		$post		= $xml->post;

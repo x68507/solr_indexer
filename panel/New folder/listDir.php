@@ -9,14 +9,16 @@
 	}else{
 		$curDir = realpath($baseDir);
 	}
-
+	echo '<poop>'.$_COOKIE['curDir'].'</poop>';
+	echo '<poop>'.realpath('c:\fucker').'</poop>';
 	//prevents user from going outside of base directory
 	if (strlen($curDir)<strlen($baseDir)){
 		$curDir = $baseDir;
 	}
 	
-	$aryExt = array('3gp','afp','afpa','asp','aspx','avi','bat','bmp','c','cfm','cgi','com','cpp','css','doc','docx','exe','gif','fla','h','htm','html','jar','jpg','jpeg','js','lasso','log','m4p','mov','mp3','mp4','mpg','mpeg','msg','ogg','pcx','pdf','php','png','ppt','pptx','psd','pl','py','rb','rbx','rhtml','rpm','ruby','sql','swf','tif','tiff','txt','vb','wav','wmv','xls','xlsx','xml','zip');
-		
+	
+	
+	
 	$dir = new DirectoryIterator($curDir);
 	$aryFiles = array();
 	$aryDirs = array();
@@ -39,11 +41,7 @@
 		echo "<dir>$val</dir>";
 	}
 	foreach($aryFiles as $val){
-		echo "<file>";
-			echo "<name>$val</name>";
-			$ext = pathinfo($val,PATHINFO_EXTENSION);
-			echo "<ext>ext_".(in_array($ext,$aryExt)?$ext:'file')."</ext>";
-		echo "</file>";
+		echo "<file>$val</file>";
 	}
 	
 	echo "</xml>";

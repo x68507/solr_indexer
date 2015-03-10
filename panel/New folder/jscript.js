@@ -1,49 +1,21 @@
 
 var curDir = '';
-var dCount = 0;
+			
 $(document).ready(function(){
 	
 	
-	$('#container-folders').dropzone({ 
+	$('#uploadForm').dropzone({ 
 		url: 'upload.php',
 		paramName:'uploadFile',
-		forceFallback:false,
-		clickable:false,
+		forceFallback:true,
 		fallback:function(){
 			$('#upload,#submit').removeClass('h');
 		},
-		dragenter:function(e){
-			dCount++;
-			$('#container-folders').addClass('gb');
+		dragenter:function(){
+			$('#folders').addClass('gb');
 		},
-		dragleave:function(e){
-			dCount--;
-			if (dCount === 0){
-				$('#container-folders').removeClass('gb');
-			}
-		},
-		drop:function(e){
-			console.log('drop',e.target)
-			$('#container-folders').removeClass('gb');
-		},success:function(e){
-			console.log(e)
-			dir();
-			$('#progress-container').addClass('h');
-			$('#status').text('');
-		},
-		addedfile:function(file){
-			$('#status').text('Uploading...');
-			$('#progress-container').removeClass('h');
-		},
-		uploadprogress:function(file,progress,bytesSent){
-			$('#progress-container').removeClass('h');
-			$('#status').text('Uploading...');
-			$('#progress').width(progress*2).addClass('partial').removeClass('full');
-			if (progress==100){
-				$('#progress').addClass('full').removeClass('partial');
-				$('#status').text('Processing...');
-				
-			}
+		dragleave:function(){
+			$('#folders').removeClass('gb');
 		}
 	});
 
@@ -54,100 +26,13 @@ $(document).ready(function(){
 		return false;
 		e.preventDefault();
 	});
-	$(document).on('mousedown',function(e){
-		
-		e.originalEvent.preventDefault();
+	if (getCookie('scan')==='true'){
+		$('#scan').prop('checked',true);
+	}
+	$(document).on('click','#scan',function(){
+		setCookie('scan',$('#scan').is(':checked'));
 	});
-	
-	$('#folders').on('dblclick','#back,.dir,.file',function(e){
-		if ($(e.target).closest('.ft').attr('id')!='dirs') return false;
-
-		
-		console.log('path',$(e.target).closest('div.df')[0]);
-		
-		setCookie('curDir',getCookie('curDir')+$(e.target).closest('div.df').attr('data-dir'));
-		dir();
-		return false;
-		e.preventDefault();
-		//dir();
-	}).on('mousedown','.dir,.file',{'that':this},function(e){
-		
-		$(window).on('mousemove.file',function(e){
-			isDragging = true;
-			$(window).off('mousemove.file');
-			$(document).on('mouseenter.file','.dir,.file',function(e){
-				var last = $('#folders').data('last');
-				if ($(this).hasClass('act')){
-					
-					if ($(this).hasClass('act') && $(last).hasClass('act')){
-						$(last).removeClass('act');
-					}
-				}
-				$('#folders').data('init',($(this).hasClass('act') && $(last).hasClass('act')));
-				if (!$(this).hasClass('act')){
-					$(this).addClass('act');
-				}
-			}).on('mouseleave.file','.dir,.file',function(e){
-				$('#folders').data('last',this);
-				var init = $('#folders').data('init');
-				if (init){
-					$(this).removeClass('act');
-				}
-			});
-		});
-		
-		
-		if (!e.ctrlKey && !e.shiftKey){
-			var l = $(this).hasClass('act');
-			console.log('l',l)
-			$('#folders .act').removeClass('act');
-			if (!l){
-				$(this).addClass('act');
-			}
-			
-			
-		}else if(e.ctrlKey){
-			$(this).toggleClass('act');
-		}else if(e.shiftKey){
-			var _old = $($('#folders').data('click')).index('#folders .df');
-			var _new = $(this).index('#folders .df');
-			
-			var start = (_old<_new?_old:_new);;
-			var end = (_old<_new?_new:_old);
-			
-			$('#folders .df').removeClass('act');
-			
-			
-			for(var dex = start;dex<=end;dex++){
-				$('#folders .df:eq('+dex+')').addClass('act');
-			}
-		}
-		if (!e.shiftKey) $('#folders').data('click',this);
-		
-		
-	});
-	$(document).on('mouseup',function(e) {
-		$(document).off('mouseenter.file').off('mouseleave.file');
-		$(window).off('mousemove.file');
-	});
-	
-	$(document).on('contextmenu','#folders',function(e){
-		
-	});
-	
-	/*END OF DOCUMENT READY*/
 });
-
-function debounce(fn, delay) {
-	var timer = null;
-	return function () {
-		var context = this, args = arguments;
-		clearTimeout(timer);
-		timer = setTimeout(function () {
-			fn.apply(context, args);
-		}, delay);
-	};
-}
 
 function secure_ip(){
 	$.post('actions.php',{'action':'secure_ip','host':$('#secure_ip').val()},function(data){
@@ -216,6 +101,7 @@ function delete_entries(){
 
 
 function dir(){
+    console.log('curDir before send',curDir)
 	$.ajax({
 		url:'listDir.php'
 		,data:{'curDir':curDir}
@@ -226,15 +112,15 @@ function dir(){
 			setCookie('curDir',curDir);
 			$('#curDir').html(curDir);
 		
-			$('#dirs,#files').html('');
+			$('#folders').html('');
 			
-			$('#dirs').append('<div id="back" data-dir="\\.."><span class="i-dir"></span><span class="name hover">\\..</span></div>');
+			$('#folders').html('<div class="dir"><input type="checkbox" disabled="disabled"><a href="#">\\..</a></div>');
 			$(data).find('dir').each(function(){
-				$('#dirs').append('<div class="dir df" data-dir="\\'+$(this).text()+'"><div class="ext ext_dir">&nbsp;</div><div class="name hover">\\'+$(this).text()+'</div></div>');
-			});
+				$('#folders').append('<div class="dir"><input type="checkbox"><a href="#"><span class="name">\\'+$(this).text()+'</span></a></div>');
+			})
 			$(data).find('file').each(function(){
-				$('#files').append('<div class="file df"><div class="ext '+$(this).find('ext').text()+'">&nbsp;</div><div class="name">'+$(this).find('name').text()+'</span></div>');
-			});
+				$('#folders').append('<div class="file"><input type="checkbox"><span class="name">'+$(this).text()+'</span></div>');
+			})
 		}
 		,error:function(e){
 			console.log(e);
@@ -243,13 +129,12 @@ function dir(){
 }
 
 function rename(){
-	
-	if ($('#folders .act').length==0){
-		alert('Please select either a single folder or file');
-	}else if ($('#folders .act').length>1){
+	if ($('#folders input[type="checkbox"]:checked').length==0){
+		alert('Please select either a single folder or file by clicking the checkbox');
+	}else if ($('#folders input[type="checkbox"]:checked').length>1){
 		alert('You can only rename one file/folder at a time');
 	}else{
-		var c = $('#folders .act');
+		var c = $('#folders input[type="checkbox"]:checked');
 		var n = c.closest('div').text();
 		var oldName = n;
 		if (c.closest('div').hasClass('file')){
@@ -266,7 +151,6 @@ function rename(){
 		
 		
 		var name = prompt('New name',n);
-		//todo: need to loop through the SOLR index to update baseDir
 		if (name!==null){
 			if (!isValid(name)){
 				alert('Please enter a valid file name');
@@ -287,7 +171,6 @@ function rename(){
 				,dataType:'xml'
 				,type:'POST'
 				,success:function(data){
-					console.log(data);
 					$('input:not(.disabled)').prop('disabled',false);
 					if ($(data).find('error').length>0){
 						alert($(data).find('error').text());
@@ -321,8 +204,7 @@ function new_directory(){
 }
 
 function del(){
-	
-	var l = $('#folders .act').length;
+	var l = $('#folders input[type="checkbox"]:checked').length;
 	if (l==0){
 		alert('Please select a file/folder to delete');
 		return false;
@@ -332,41 +214,24 @@ function del(){
 	if (ans){
 		var obj = {};
 		
-		
-		$('#folders .act').each(function(dex){
-		
-			obj[dex] = $.trim($(this).text());
+		$('#folders input[type="checkbox"]:checked').each(function(dex){
+			obj[dex] = $(this).closest('div').text();
 		});
 		
 		var json = JSON.stringify(obj);
-		
-		$('#status').text('Deleting...');
-		$('#progress-container').removeClass('h');
-		$('#progress').width(200).removeClass('partial').addClass('full');
-		
-		console.log('before','json',json,'curDir',curDir);
 		$.ajax({
 			url:'actions.php'
 			,data:{'action':'del','json':json,'curDir':curDir}
 			,dataType:'xml'
 			,type:'POST'
 			,success:function(data){
-				console.log('success',data);
-				$('#status').text('');
-				$('#progress-container').addClass('h');
-				$('#progress').width(0);
+				console.log(data);
 				
 				dir();
 			}
 			,error:function(data){
-				console.log('error',data);
-				c('It appears one or more directories were not empty.  Please refresh the page and try to delete all files inside directory and try again<hr>');
-				
-				$('#status').text('');
-				$('#progress-container').addClass('h');
-				$('#progress').width(0);
-				
-				dir();
+				console.log(data);
+				c('It appears one or more directories were not empty.  Please delete all files inside directory and try again<hr>');
 			}
 		});
 	}

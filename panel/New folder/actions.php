@@ -46,10 +46,6 @@
 			$x = ($type=='file'?'\\':'');
 			$old = realpath($dir.$x.$_POST['oldName']);
 			$new = ($dir.$x.$_POST['newName']);
-			
-			
-			
-			/*
 			if (file_exists($new)){
 				echo '<error>File already exists</error>';
 				die;
@@ -57,14 +53,9 @@
 			
 			rename($old,$new);
 			if (isset($_COOKIE['scan']) && $_COOKIE['scan']){
-				
-				//deletes old file
-				//del(basename($old));
-				//re-adds new file
-				//tika($new);
-				
+				del(basename($old));
+				tika($new);
 			}
-			*/
 			break;
 		case 'new_directory':
 			$dir = $_POST['curDir'];
@@ -83,12 +74,11 @@
 				}else{
 					//need to extract the base and add this as a second key
 					if (isset($_COOKIE['scan']) && $_COOKIE['scan']){
-						
+						del($val);
 					}
-					del($val);
 					unlink($file);
 				}
-				//echo '<file>'.($curDir.$x.$val).'</file>';
+				echo '<file>'.realpath($curDir.$x.$val).'</file>';
 			}
 			break;
 		case 'logout':

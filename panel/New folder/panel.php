@@ -73,34 +73,24 @@
 		<pre id='console'>
 			
 		</pre>
-		<form id='container-folders' action='test.php' method='post' enctype='multipart/form-data'>
+		<div id='container-folders'>
 			<div id='header-folders'>
 				
 				<!--<input type='Button' value='New File'>-->
 				<div id='header-form'>
-					<!--<form id='uploadForm' method="post" action="upload.php" enctype="multipart/form-data">-->
-						<input type="checkbox" name='scan' value='yes' id='scan' checked class='h'>
+					<form id='uploadForm' method="post" action="upload.php" enctype="multipart/form-data">
+						<input type="checkbox" name='scan' value='yes' id='scan'>Update Solr
 						<input class='h' type="file" id="upload" name="uploadFile" style="width: 88px; opacity:0.0; filter:alpha(opacity=0); " onchange='uploadChange()'/>
 						<input class='h' type="submit" id="submit" name="submit" value='New File' style="margin-left: -88px"/>
-						<input class='hover gray bb btr btl bbr bbl' type='Button' value='New Directory' onclick='new_directory()'>
-						<input class='hover gray bb btr btl bbr bbl' type='Button' value='Delete Selected' onclick='del()'>
-						<input class='hover gray bb btr btl bbr bbl' type='button' value='Rename' onclick='rename()'>
-					<!--</form>-->
+						<input type='Button' value='New Directory' onclick='new_directory()'>
+						<input type='Button' value='Delete Selected' onclick='del()'>
+						<input type='button' value='Rename' onclick='rename()'>
+					</form>
 				</div>
 			</div>
-			<div>
-				<div id='curDir'></div>
-				<div id='status'></div>
-				<div id='progress-container' class='h'>
-					<div id='progress' class='partial'></div>
-				</div>
-			</div>
-			<div id='folders' class='us'>
-				<div id='dirs' class='ft'></div>
-				<div id='files' class='ft'></div>
-			</div>
-			<span class='dz-message'></span>
-		</form>
+			<div id='curDir'></div>
+			<div id='folders'></div>
+		</div>
 		<div id='logout'>
 			<a href='#' onclick='logout()'>Logout</a>
 		</div>

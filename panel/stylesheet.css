@@ -1,3 +1,5 @@
+body{font-family:Arial, Helvetica, sans-serif}
+
 .links:not(:last-child){margin-bottom:10px;}
 .container-links{padding:10px;border:1px solid black;width:150px}
 #secure_ip{width:150px}
@@ -6,10 +8,121 @@
 .tab{padding-left:20px}
 
 #container-folders{position:absolute;top:10px;left:250px;width:70%;width:calc(100% - 260px);height:95%;height:calc(100% - 60px);overflow-x:hidden;overflow-y:auto;border:1px solid gray}
-#header-folders{width:100%;height:31px;border-bottom:1px solid gray}
+#header-folders{width:100%;height:38px;border-bottom:1px solid gray}
 #header-folders input{margin:5px;display:inline}
 form{margin:0;padding:0}
 #folders{padding:5px}
-#gb{border:2px solid green}
-#curDir{font-family:"Courier New", Courier, monospace;padding:3px}
+.gb{outline: #3D7CE3 dashed 2px !important;background:#4285F4}
+
+#curDir,#progress-container,#status{display:inline-block}
+
+#curDir{font-family:"Courier New", Courier, monospace;padding:3px;}
+#status{width:100px}
+#progress-container{width:200px;border:1px solid #4484F1;margin-top:2px;border-radius:2px;position:absolute}
+#progress{height:18px;}
+#progress.partial{background:#4484F1}
+#progress.full{background:url(../images/animated-overlay.gif) repeat-x center;}
+
 .h{display:none !important}
+
+#folders{user-select:none}
+
+.dir:hover:not(.act){background:#DAE6FC}
+.dir,.file{color:#222222}
+
+.dir,.file:not(:first-child){border-top:1px solid #EEEEEE}
+
+.dir:last-child:not(.act),.file:last-child{border-bottom:1px solid #EEEEEE }
+.act{background:#4285F4;color:#fff;}
+.dir.act,.file.act:not(:first-child){border-top:1px solid #3D7CE3 !important}
+
+.dir.act:last-child,.file.act:last-child{border-bottom:1px solid #3D7CE3 !important}
+
+.hover{cursor:pointer}
+
+.us{ -webkit-user-select: none;-moz-user-select: none;-ms-user-select: none;}
+
+.btr{border-top-right-radius:2px}
+.btl{border-top-left-radius:2px}
+.bbr{border-bottom-right-radius:2px}
+.bbl{border-bottom-left-radius:2px}
+.gray{background:#F5F5F5;border:1px solid D8D8D8;color:#444444;box-shadow: none;outline:0;}
+.gray:hover{box-shadow: 0px 1px 1px #EAEAEA;}
+.gray:active{box-shadow:inset  0 8px 8px -8px #EAEAEA;}
+.bb{min-width:70px;height:28px;}
+
+
+
+
+
+
+
+.df div{display:inline-block}
+.ext{width:20px}
+
+.ext_dir { background: url(../extensions/filetree/img/directory.png) left top no-repeat; }
+.ext_file { background: url(../extensions/filetree/img/file.png) left top no-repeat; }
+
+
+
+
+.ext_3gp { background: url(../extensions/filetree/img/film.png) left top no-repeat; }
+.ext_afp { background: url(../extensions/filetree/img/code.png) left top no-repeat; }
+.ext_afpa { background: url(../extensions/filetree/img/code.png) left top no-repeat; }
+.ext_asp { background: url(../extensions/filetree/img/code.png) left top no-repeat; }
+.ext_aspx { background: url(../extensions/filetree/img/code.png) left top no-repeat; }
+.ext_avi { background: url(../extensions/filetree/img/film.png) left top no-repeat; }
+.ext_bat { background: url(../extensions/filetree/img/application.png) left top no-repeat; }
+.ext_bmp { background: url(../extensions/filetree/img/picture.png) left top no-repeat; }
+.ext_c { background: url(../extensions/filetree/img/code.png) left top no-repeat; }
+.ext_cfm { background: url(../extensions/filetree/img/code.png) left top no-repeat; }
+.ext_cgi { background: url(../extensions/filetree/img/code.png) left top no-repeat; }
+.ext_com { background: url(../extensions/filetree/img/application.png) left top no-repeat; }
+.ext_cpp { background: url(../extensions/filetree/img/code.png) left top no-repeat; }
+.ext_css { background: url(../extensions/filetree/img/css.png) left top no-repeat; }
+.ext_doc,.ext_docx { background: url(../extensions/filetree/img/doc.png) left top no-repeat; }
+.ext_exe { background: url(../extensions/filetree/img/application.png) left top no-repeat; }
+.ext_gif { background: url(../extensions/filetree/img/picture.png) left top no-repeat; }
+.ext_fla { background: url(../extensions/filetree/img/flash.png) left top no-repeat; }
+.ext_h { background: url(../extensions/filetree/img/code.png) left top no-repeat; }
+.ext_htm { background: url(../extensions/filetree/img/html.png) left top no-repeat; }
+.ext_html { background: url(../extensions/filetree/img/html.png) left top no-repeat; }
+.ext_jar { background: url(../extensions/filetree/img/java.png) left top no-repeat; }
+.ext_jpg { background: url(../extensions/filetree/img/picture.png) left top no-repeat; }
+.ext_jpeg { background: url(../extensions/filetree/img/picture.png) left top no-repeat; }
+.ext_js { background: url(../extensions/filetree/img/script.png) left top no-repeat; }
+.ext_lasso { background: url(../extensions/filetree/img/code.png) left top no-repeat; }
+.ext_log { background: url(../extensions/filetree/img/txt.png) left top no-repeat; }
+.ext_m4p { background: url(../extensions/filetree/img/music.png) left top no-repeat; }
+.ext_mov { background: url(../extensions/filetree/img/film.png) left top no-repeat; }
+.ext_mp3 { background: url(../extensions/filetree/img/music.png) left top no-repeat; }
+.ext_mp4 { background: url(../extensions/filetree/img/film.png) left top no-repeat; }
+.ext_mpg { background: url(../extensions/filetree/img/film.png) left top no-repeat; }
+.ext_mpeg { background: url(../extensions/filetree/img/film.png) left top no-repeat; }
+.ext_msg { background: url(../extensions/filetree/img/message.png) left top no-repeat; }
+.ext_ogg { background: url(../extensions/filetree/img/music.png) left top no-repeat; }
+.ext_pcx { background: url(../extensions/filetree/img/picture.png) left top no-repeat; }
+.ext_pdf { background: url(../extensions/filetree/img/pdf.png) left top no-repeat; }
+.ext_php { background: url(../extensions/filetree/img/php.png) left top no-repeat; }
+.ext_png { background: url(../extensions/filetree/img/picture.png) left top no-repeat; }
+.ext_ppt,.ext_pptx { background: url(../extensions/filetree/img/ppt.png) left top no-repeat; }
+.ext_psd { background: url(../extensions/filetree/img/psd.png) left top no-repeat; }
+.ext_pl { background: url(../extensions/filetree/img/script.png) left top no-repeat; }
+.ext_py { background: url(../extensions/filetree/img/script.png) left top no-repeat; }
+.ext_rb { background: url(../extensions/filetree/img/ruby.png) left top no-repeat; }
+.ext_rbx { background: url(../extensions/filetree/img/ruby.png) left top no-repeat; }
+.ext_rhtml { background: url(../extensions/filetree/img/ruby.png) left top no-repeat; }
+.ext_rpm { background: url(../extensions/filetree/img/linux.png) left top no-repeat; }
+.ext_ruby { background: url(../extensions/filetree/img/ruby.png) left top no-repeat; }
+.ext_sql { background: url(../extensions/filetree/img/db.png) left top no-repeat; }
+.ext_swf { background: url(../extensions/filetree/img/flash.png) left top no-repeat; }
+.ext_tif { background: url(../extensions/filetree/img/picture.png) left top no-repeat; }
+.ext_tiff { background: url(../extensions/filetree/img/picture.png) left top no-repeat; }
+.ext_txt { background: url(../extensions/filetree/img/txt.png) left top no-repeat; }
+.ext_vb { background: url(../extensions/filetree/img/code.png) left top no-repeat; }
+.ext_wav { background: url(../extensions/filetree/img/music.png) left top no-repeat; }
+.ext_wmv { background: url(../extensions/filetree/img/film.png) left top no-repeat; }
+.ext_xls ,.ext_xlsx{ background: url(../extensions/filetree/img/xls.png) left top no-repeat; }
+.ext_xml { background: url(../extensions/filetree/img/code.png) left top no-repeat; }
+.ext_zip { background: url(../extensions/filetree/img/zip.png) left top no-repeat; }
+

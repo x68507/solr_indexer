@@ -31,6 +31,7 @@
 #search-bg,#iframe-url,#search-box{position:absolute;top:0px;}
 
 #search-box{background: transparent;}
+
 #iframe-url{padding:3px;background:#F2F2F2;height:20px;width:calc(100% - 6px);right:0px;}
 
 .bs{box-shadow: 2px 2px 2px #8E8E8E;border-top:1px solid #BABABA;
@@ -103,7 +104,7 @@
 
 #viewer{position:absolute;top:26px;width:100%;height:calc(100% - 26px)}
 
-input[type="checkbox"]:disabled {display:none}
+input[type="checkbox"]:disabled ,#search-box::-ms-clear {display:none}
 .jaofiletree{text-overflow:ellipsis}
 .h{display:none}
 .trh{display:none;background:pink !important}

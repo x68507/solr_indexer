@@ -44,6 +44,24 @@ $(document).ready(function(){
 	$(window).resize(function(){
 		h();
 	});
+	/*
+	$(document).on('click','.jaofiletree:gt(0) > li > input',function(e){
+		f = true;
+	}).on('click','.jaofiletree:gt(0) > li:not(input)',function(e){		
+		if (f==false){
+			if (!ie8()){
+				console.log(this)
+			}
+			$(this).removeClass('selected')
+			//$(this).removeClass('selected').find('a[data-file]:eq(0)').click();
+				
+			cb();
+			return false;
+		}
+		f = false;
+		
+	});
+	*/
 	
 	$(document).on('click','.jaofiletree input',function(e){
 		$(this).parents().filter('input:eq(0)').prop('checked',false).prop('indeterminate',true);
@@ -58,7 +76,9 @@ $(document).ready(function(){
 		
 		/*
 		$(this).parentsUntil('#jao','li.directory input').css('background','pink')
-		console.log($(this).parentsUntil('#jao','li.directory').find('input').length);
+		if (!ie8()){
+			console.log($(this).parentsUntil('#jao','li.directory').find('input').length);
+		}
 		*/
 	});
 	$(document).on('click','.page',function(){
@@ -132,18 +152,20 @@ $(document).ready(function(){
 			if (get('url')){
 				var json = JSON.parse(decodeURIComponent(get('url')));
 				if (json['folders']){
+				    
+					
 					$('.jaofiletree input[type="checkbox"]').prop('checked',false);
 					$('.jaofiletree input[type="checkbox"]:eq(0)').prop('indeterminate',true);
+					
 					$.each(json['folders'],function(dex,val){
 						var a = $('.jaofiletree a[data-file="'+val+'"]');
 						$('#jao').jaofiletree('open',val);
 						a.prev('input[type="checkbox"]').prop('checked',true);
+						
 					});
-				}else{
-					$('.jaofiletree input[type="checkbox"]').prop('checked',true)
+					
 				}
-			}else{
-				$('.jaofiletree input[type="checkbox"]').prop('checked',true)
+				
 			}
 		}
 		,'usecheckboxes':'dirs'
@@ -267,8 +289,9 @@ $(document).ready(function(){
 				var _file =  that.attr('data-base') +'/' + encodeURIComponent(that.attr('data-file'));
 				
 				var background = e.ctrlKey;
-				
-				console.log(that.attr('data-base') +'/' + encodeURIComponent(that.attr('data-file')));
+				if (!ie8()){	
+					console.log(that.attr('data-base') +'/' + encodeURIComponent(that.attr('data-file')));
+				}
 				openFile(_file,background);
 				return false;
 			}else if (e.ctrlKey && e.shiftKey && e.keyCode==70){
@@ -452,9 +475,9 @@ function openFile(_file,background){
 	
 	//var ext = _file.split('.')[_file.split('.').length];
 	var ext = _file.split('.')[_file.split('.').length-1];
-	
-	console.log(_file);
-
+	if (!ie8()){
+		console.log(_file);
+	}
 	//var _file = base + root +  that.attr('data-base') +'/' + encodeURIComponent(that.attr('data-file'));
 	if (ie8()){
 		var path = _file.split('file=');
@@ -563,23 +586,9 @@ function btog(type){
 }
 
 function autocomplete(){
-	//var v = $('#search-box').val();
-	var obj = {};
-		obj['val'] = $('#search-box').val();
-		
-	var checked = $('#jao').jaofiletree('getChecked');
-	var totalCB = $('#jao').find('input[type="checkbox"][data-file] + a').length;
-	if (checked.length!=totalCB){
-		var c = []
-		$.each(checked,function(dex,val){
-			c.push(val['file']);
-		});
-		obj['folders'] = c;
-	}
-	var json = JSON.stringify(obj);
+	var v = $('#search-box').val();
 	
-	$.post('php_scripts/search.php',{'action':'auto','json':json},function(data){
-		console.log('auto',data)
+	$.post('php_scripts/search.php',{'action':'auto','json':v},function(data){
 		if ($(data).find('main').length>0 && !bSearch){
 			btog('auto');
 			var sb = $.trim($('#search-box').val());
@@ -590,8 +599,6 @@ function autocomplete(){
 			$(data).find('auto').each(function(){
 				$('#search-auto').append('<div class="div-auto hover">'+$(this).text().replace(sbr,sb)+'</div>');
 			});
-		}else{
-			$('#search-auto').html('No results found');
 		}
 		
 	},'xml');
@@ -793,14 +800,16 @@ function cb(){
 	var cb = $('.drive').find('input[type="checkbox"]:eq(0)');
 	/*
 	if (first==true){
-		console.log(first);
+		if (!ie8()){
+			console.log(first);
+		if (!ie8()){
 		//$('#jao input[type="checkbox"]:eq(0)').click();
 		first = false;
 	}
 	*/
 	
 	
-	
+	/*
 	if (cur==0){
 		cb.prop('indeterminate',false);
 		cb.prop('checked',false);
@@ -811,7 +820,7 @@ function cb(){
 		cb.prop('indeterminate',true);
 		cb.prop('checked',false);
 	}
-	
+	*/
 }
 
 Date.fromISO= function(s){

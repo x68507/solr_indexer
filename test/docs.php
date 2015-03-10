@@ -1,4 +1,4 @@
-<!--<html manifest="manifest.manifest">-->
+<!DOCTYPE html>
 <html>
 	<head>
 		<meta http-equiv="X-UA-Compatible" content="IE=Edge" />

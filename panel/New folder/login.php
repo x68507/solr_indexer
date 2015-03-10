@@ -6,10 +6,6 @@
 	
 	$username = 'root';
 	$password = 'sap';
-	$dir = '../docs';
-	if (!file_exists($dir)){
-		mkdir($dir);		
-	}
 	
 	//checks validation
 	if ($_POST['username']==$username && $_POST['password']==$password){

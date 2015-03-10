@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xml>
+	<!--WEB APP SPECIFIC PROPERTIES-->
+	<title>Manuals</title>
+	<!--base directory in the root folder where all the documents are stored-->
+	<baseDir>\docs\</baseDir>
+	<!--number of rows to show per search result page-->
+	<numRows>25</numRows>
+	<!--initial/restricted IP address to query the SOLR instance
+	    
+		SOLR can be located on a different machine than the Apache/PHP server; by default, they are located on the same server
+		
+		NOTE: if SOLR & PHP are located on different servers, then the Panel Web Interface will not work and you will need to manually upload files
+	    to your SOLR instance.  Ensure that the documents are located on both the SOLR server and the PHP server in the same relative directories
+		and with the same file names.
+	-->
+	<remote_ip>localhost</remote_ip>
+	
+	
+	
+	
+	<!--Location of the PHP executable required for command line prompts-->
+	<php>C:\wamp\bin\php\php5.4.16\php-win.exe</php>
+	
+	
+	
+	
+	<!--APACHE TIKA jar file; this is a separate download that can be placed anywere on the SOLR server-->
+	<tika>C:\tika\tika-app-1.6.jar</tika>
+	
+	
+	
+	
+	<!--APACHE SOLR CONFIGURATION-->
+	<!--java file that loads XML files into SOLR; \example\exampledocs\post.jar is the default location under the SOLR install-->
+	<post>C:\solr\solr\example\exampledocs\post.jar</post>
+	<!--batch file that starts/stops the SOLR instance; \bin\solr.cmd is the default location under the SOLR install-->
+	<solr>c:\solr\solr\bin\solr.cmd</solr>
+	<!--XML file that loads the SOLR configuration file; \example\solr\collection1\conf\schema.xml is the default location under the SOLR install-->
+	<schema>C:\solr\solr\example\solr\collection1\conf\schema.xml</schema>
+	<!--XML file that loads jetty web server; \example\etc\jetty.xml is the default location under the SOLR install-->
+	<jetty>C:\solr\solr\example\etc\jetty.xml</jetty>
+</xml>
