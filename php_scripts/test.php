@@ -10,7 +10,7 @@
 	}
 	
 	
-	$q = trim('producti');
+	$q = trim('bom co');
 	$regex = '/'.$q.'[^\s]* [^\s]*/i';
 	
 	$blacklist = array('or','on','and');
@@ -42,6 +42,8 @@
 		$str = str_replace(array('.',',',')','(',':'),'',$str);
 		
 		preg_match_all($regex,$str,$match);
+		$t = 'match: '.json_encode($match);
+		
 		foreach($match as $v1){
 			foreach($v1 as $v2){
 				$arr=preg_split("/\s+(?=\S*+$)/",$v2);
@@ -55,6 +57,8 @@
 		}
 		unset($str,$match);
 	}
+	
+	
 	unset($val);
 	arsort($ary);
 	if (count($ary)>0){
@@ -65,6 +69,7 @@
 	}
 	if (!$xml){
 		echo "<pre>";
+			echo $t;
 			print_r($arr);
 			print_r($ary);
 

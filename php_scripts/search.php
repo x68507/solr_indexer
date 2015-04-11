@@ -39,7 +39,8 @@
 				$blacklist = array('or','on','and');
 				preg_replace('("|\')','',$q);
 				$q = urlencode($q);
-				$hl = '&hl=true&hl.fl=content&hl.simple.pre=%3Cem%3E&hl.simple.post=%3C%2Fem%3E&hl.preserveMulti=true';
+				//$hl = '&hl=true&hl.fl=content&hl.simple.pre=%3Cem%3E&hl.simple.post=%3C%2Fem%3E&hl.preserveMulti=true';
+				$hl = '&hl=true&hl.fl=content&hl.preserveMulti=true';
 				$url = 'http://'.$host.':8983/solr/collection1/select?q=text:"'.$q.'"'.$sub.'&fl=id&wt=json&indent=true'.$hl;
 				
 				
@@ -64,24 +65,52 @@
 				$d = 0;
 				foreach($response['highlighting'] as $key=>$val){
 					$str = strtolower(strip_tags(implode('',$val['content'])));
-					
+					echo "<test><![CDATA[".json_encode($str)."]]></test>";
 					$str = str_replace(array('.',',',')','(',':',';','?','!'),' ',$str);
 					$str = preg_replace('!\s+!', ' ', $str);
 					//$t = $str;
 					$t = 'first';
 					preg_match_all($regex,$str,$match);
+					$t = $regex. ' || '.$str;
+					
+					$t0 = 'match: '.json_encode($match);
+					
+					echo "<test1><![CDATA[".strtolower(strip_tags(implode('',$val['content'])))."]]></test1>";
+					
+					if (isset($match[0][0])){
+						
+						$v2 = $match[0][0];
+						$arr = preg_split("/\s+(?=\S*+$)/",$v2);
+						
+						if (isset($arr[1])){
+							//legacy code before implementing folders
+							if ($arr[0]!=$arr[1] && strlen($arr[1])>2 && strlen($arr[1])<30 && !in_array($arr[1],$blacklist)){
+								if (!array_key_exists($v2,$ary)){
+									$ary[$v2] = 0;
+								}
+								$ary[$v2]++;
+							}
+						}else{
+							if (strlen($arr[0])>2 && strlen($arr[0])<30 && !in_array($arr[0],$blacklist)){
+								if (!array_key_exists($v2,$ary)){
+									$ary[$v2] = 0;
+								}
+								$ary[$v2]++;
+							}
+						}
+						
+					}
+					
 
-					$t = json_encode($match);
 					
-					
+					/*
 					foreach($match as $v1){
 						//$t = implode(' ... ',$v1);
 						
 						foreach($v1 as $v2){
 							
-							
 							$arr=preg_split("/\s+(?=\S*+$)/",$v2);
-							$t = $arr[0];
+							//$t = $arr[0];
 							if (isset($arr[1])){
 								//legacy code before implementing folders
 								if ($arr[0]!=$arr[1] && strlen($arr[1])>2 && strlen($arr[1])<30 && !in_array($arr[1],$blacklist)){
@@ -98,14 +127,11 @@
 									$ary[$v2]++;
 								}
 							}
-							/*
-							
-							*/
 						}
-						
 					}
 					
 					$d++;
+					*/
 					unset($str,$match,$arr);
 				}
 				unset($val);
@@ -116,25 +142,23 @@
 				
 
 				$dex = 1;
-				
+				/*
 				if (count($ary)>0){
 					reset($ary);
 					$first_key = key($ary);
 					$arr = preg_split("/\s+(?=\S*+$)/",$first_key);
 					echo "<main><![CDATA[".$arr[0]."]]></main>";
 				}
+				*/
 				
 				//echo "<main>".$first_key."</main>";
-				$dex2 = 0;
+				//echo "<auto>test</auto>";
 				foreach($ary as $key=>$val){
-					if ($dex2>0){
-						if (mb_detect_encoding($key)=='ASCII') echo "<auto><![CDATA[".$key."]]></auto>";
-						//echo "<auto><![CDATA[".mb_detect_encoding($key).' || '.$key."]]></auto>";
-						
-						$dex++;
-						if ($dex>$maxAuto) break;
+					if (mb_detect_encoding($key)=='ASCII'){
+							echo "<auto><![CDATA[".$key."]]></auto>";
 					}
-					$dex2++;
+					$dex++;
+					if ($dex>$maxAuto) break;
 				}
 
 				

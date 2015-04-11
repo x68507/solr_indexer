@@ -22,15 +22,25 @@ function h(){
 }
 
 $(document).ready(function(){
-	
+	//loads mobile navigation drawer if screen resolution is less than 600
+	if ($(window).width()<600){
+		$("<link/>", {
+			rel: "stylesheet",
+			type: "text/css",
+			href: "extensions/sidr/stylesheets/jquery.sidr.dark.css"
+		}).appendTo("head");
+		$.getScript("extensions/sidr/jquery.sidr.min.js", function(){
+			$('#border-menu').sidr({
+				'body':$('#right')
+			});
+			
+		});
+	}
 	$.post('panel/config.xml',function(data){
-
 		root = $(data).find('baseDir').text();
-		
-		
 	},'xml');
 	
-	
+	$('#search-box').focus();
 	
 	if (get('url')){
 		URLpopState();
@@ -179,6 +189,7 @@ $(document).ready(function(){
 		$('#jao li.selected input').prop('checked',false);
 		$('input[type="checkbox"][disabled="disabled"]').remove();
 	});
+	/*possibly remove*/
 	$(document).on('click','#iframe-urltext',function(){
 		selectText($(this).attr('id'))
 	});
@@ -352,18 +363,29 @@ $(document).ready(function(){
 		}
 	});
 	
-	$(document).on('click','#s-db span,#s-pb span',function(){
+	$(document).on('click','#s-db span,#s-pb span,#s-dbm,#s-pbm',function(e){
+		if ($(this)[0].tagName=='SPAN'){
+			var op = $(this).attr('data-op');
+			$(this).closest('td').find('select option[data-op="'+op+'"]').attr('selected','selected');
+		}else{
+			var op = $('option:selected',this).attr('data-op');
+			$(this).closest('td').find('span.radio-sub').removeClass('active');
+			$(this).closest('td').find('span.radio-sub[data-op="'+op+'"]').addClass('active');
+		}
 		
-		if ($(this).attr('data-op')=='bt'){
+		if (op=='bt'){
+			console.log('between');
 			$(this).closest('tr').find('.sai').addClass('half').removeClass('full');
 			$(this).closest('tr').find('.sai-ic .second').removeClass('h');
-			
 		}else{
-			
+			//console.log('
 			$(this).closest('tr').find('.sai').removeClass('half').addClass('full');
 			$(this).closest('tr').find('.sai-ic .second').addClass('h');
 		}
 		
+	});
+	
+	$(document).on('change','',function(e){
 		
 	});
 	
@@ -444,6 +466,7 @@ $(document).ready(function(){
 			}
     	}
 	}
+	
 	//END OF DOCUMENT READY
 });
 
@@ -492,6 +515,7 @@ function URLpopState(){
 	    $('#s-date').val(json.date);
         $('#s-db span.active').removeClass('active');
         $('#s-db span[data-op="'+json['date-op']+'"]').addClass('active');
+		$('#s-dbm option[data-op="'+json['date-op']+'"]').attr('selected','selected');
         if (json.date2){
             $('#s-date,#s-date2').addClass('half');
             $('#s-date2').removeClass('h').val(json.date2);
@@ -501,6 +525,7 @@ function URLpopState(){
 	    $('#s-page').val(json.page);
         $('#s-pb span.active').removeClass('active');
         $('#s-pb span[data-op="'+json['page-op']+'"]').addClass('active');
+		$('#s-pbm option[data-op="'+json['date-op']+'"]').attr('selected','selected');
         if (json.page2){
             $('#s-page,#s-page2').addClass('half');
             $('#s-page2').removeClass('h').val(json.page2);
@@ -579,15 +604,17 @@ function autocomplete(){
 	var json = JSON.stringify(obj);
 	
 	$.post('php_scripts/search.php',{'action':'auto','json':json},function(data){
-		console.log('auto',data)
-		if ($(data).find('main').length>0 && !bSearch){
+		//console.log('auto',data)
+		//if ($(data).find('main').length>0 && !bSearch){
+		if (!bSearch){
 			btog('auto');
 			var sb = $.trim($('#search-box').val());
+			console.log($(data).find('auto:eq(0)').text());
 			var sbr = new RegExp(sb,'gi');
-			var m = $(data).find('main').text().replace(sbr,sb);
+			var m = $(data).find('auto:eq(0)').text().replace(sbr,sb);
 			$('#search-bg').data('oVal',m).val(m);
-			$('#search-auto').html('').append('<div class="div-auto hover boom">'+$(data).find('main').text().replace(sbr,sb)+'</div>');
-			$(data).find('auto').each(function(){
+			$('#search-auto').html('').append('<div class="div-auto hover boom">'+$(data).find('auto:eq(0)').text().replace(sbr,sb)+'</div>');
+			$(data).find('auto:gt(0)').each(function(){
 				$('#search-auto').append('<div class="div-auto hover">'+$(this).text().replace(sbr,sb)+'</div>');
 			});
 		}else{
@@ -651,6 +678,8 @@ function search(o){
 		if ($('#s-title').val().length>0){
 			obj['title'] = $('#s-title').val();
 		}
+		//fucker
+		
 		if ($('#s-page').val().length>0){
 			obj['page'] = $('#s-page').val();
 			obj['page-op'] = $('.r-pc.active').attr('data-op');
@@ -662,13 +691,14 @@ function search(o){
 		}
 		if ($('#s-date').val().length>0){
 			obj['date'] = $('#s-date').val();
-			obj['date-op'] = $('#s-db .active').attr('data-op');
+			obj['date-op'] = $('.r-d.active').attr('data-op');
 			if ($('#s-db .active').attr('data-op')=='bt' && $('#s-date2').val().length==0){
 				return false;
 			}else{
 				if ($('#s-date2').val().length>0) obj['date2'] = $('#s-date2').val();
 			}
 		}
+		
 		obj['auto'] = ($('#search-box').data('auto')?'true':'false');
 		
 		if ($('.shactive').length>0){
@@ -704,27 +734,32 @@ function sp(action,json){
 		var totalPage = parseInt($(data).find('pages').text());
 		//var p = (totalPage>(cur+5)?cur+5:totalPage);
 		
-		if (totalPage>10){
-			if (cur+5<10){
-				var p = 10;
+		//2*70+40
+		console.log('totlaPage',totalPage)
+		//if (($('#right').width() - 2*70)/totalPage
+		//var mPage = parseInt();
+		var mPage = 2 * Math.floor((($('#right').width() - 2*70)/40)/2);
+		var hPage = mPage/2;
+		//var hPage = 2 * Math.floor(mPage / 2);
+		
+		console.log('mPage',mPage,'hPage',hPage)
+		
+		if (totalPage>mPage){
+			if (cur+hPage<mPage){
+				var p = mPage;
 			}else{
-				var p = (totalPage>(cur+5)?cur+5:totalPage);
+				var p = (totalPage>(cur+hPage)?cur+hPage:totalPage);
+			}
+			
+			if (cur-hPage>totalPage-mPage){
+				var b = totalPage - mPage;
+			}else{
+				var b = (cur>hPage?cur-hPage:0);
 			}
 		}else{
 			var p = totalPage;
-		}
-		
-		
-		if (totalPage>10){
-			if (cur-5>totalPage-10){
-				var b = totalPage - 10;
-			}else{
-				var b = (cur>5?cur-5:0);
-			}
-		}else{
 			var b = 0;
 		}
-		
 		
 		
 		if (t==0 || totalPage==1){
@@ -733,7 +768,7 @@ function sp(action,json){
 			$('#search-footer').removeClass('h');
 		}
 		
-		$('#search-pages').html('');
+		$('#search-pages,#search-body').html('');
 		
 		
 		
@@ -746,7 +781,6 @@ function sp(action,json){
 		}).addClass('active');
 		//$('.page:eq('+cur+')').addClass('active');
 		$('#search-pages').html
-		//$('#search-time').html(l + ' Result'+(l!=1?'s':'')+' (' + $(data).find('time').text()  +' seconds)');
 		$('#search-time').html(s+' - '+ e + ' of ' + t +' Result'+(l!=1?'s':'')+' (' + $(data).find('time').text()  +' seconds)');
 
 		$(data).find('file').each(function(){
@@ -755,16 +789,15 @@ function sp(action,json){
 				var ext = file.split('.')[file.split('.').length-1];
 				$('.sr-div:last').append('<div class="sr-row">&nbsp;</div>');
 				$('.sr-div:last').append('<div class="ext_'+ext+'">&nbsp;&nbsp;&nbsp;&nbsp;</div>');
+				
 				$('.sr-div:last').append('<div class="sr-title nus ctx" title="'+$(this).find('fileName').text()+'">'+$(this).find('fileName').text()+'</div>');
-				$('.sr-div:last').append('<div class="sr-file nus ctx">'+$(this).find('baseDir').text()+'</div>');
-				//$('.sr-div:last').append('<div class="sr-count nus">'+$(this).find('count').text()+'</div>');
-				//$('.sr-div:last').append('<div class="sr-count nus ctx">&nbsp;</div>');
-				$('.sr-div:last').append('<div class="sr-pages nus ctx">'+$(this).find('pageCount').text()+'</div>');
-				//var lm = new Date($(this).find('lastModified').text());
+				
+				$('.sr-div:last').append('<div class="nob nob-1"><div class="sr-file nus ctx">'+$(this).find('baseDir').text()+'</div></div>');
+				
+				$('.sr-div:last').append('<div class="nob nob-2"><div class="sr-pages nus ctx">'+$(this).find('pageCount').text()+'</div></div>');
+				
 				var lm = Date.fromISO($(this).find('lastModified').text());
-				//alert($(this).find('lastModified').text())
-				//alert(lm)
-				$('.sr-div:last').append('<div class="sr-lm nus ctx">'+(lm.getFullYear() +'-'+ _2(lm.getMonth()+1) +'-'+ _2(lm.getDate()))+'</lm>');
+				$('.sr-div:last').append('<div class="nob nob-3"><div class="sr-lm nus ctx">'+(lm.getFullYear() +'-'+ _2(lm.getMonth()+1) +'-'+ _2(lm.getDate()))+'</div></div>');
 		});
 		
 		$('#search-box').blur();

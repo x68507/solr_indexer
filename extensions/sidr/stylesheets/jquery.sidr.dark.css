@@ -1,0 +1,5 @@
+.sidr {display: none;position: absolute;position: fixed;top: 0;height: 100%;z-index: 999999;width: 260px;overflow-x: none;overflow-y: auto;font-size: 15px;color: #fff;-webkit-box-shadow: inset 0 0 5px 5px #222;-moz-box-shadow: inset 0 0 5px 5px #222;box-shadow: inset 0 0 5px 5px #222;}
+.sidr .sidr-inner {padding: 0 0 15px;}
+.sidr.right {left: auto;right: -260px;}
+.sidr.left {left: -260px;right: auto;}
+.sidr-animating,.sidr-open{height:100%}

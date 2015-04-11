@@ -27,7 +27,7 @@
 			$txt = realpath($php).' '.realpath($tika).' '.realpath($base);
 			echo $txt;
 			//pclose(popen($txt,'r'));
-			exec($txt);
+			//exec($txt);
 			
 			//echo 'Parsed & updated base directory';
 			
