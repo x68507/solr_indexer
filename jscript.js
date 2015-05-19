@@ -8,6 +8,7 @@ var f = false;
 var first = true;
 var timeout;
 var bSearch;
+var isMobile = false;
 
 
 function ie8(){
@@ -24,6 +25,7 @@ function h(){
 $(document).ready(function(){
 	//loads mobile navigation drawer if screen resolution is less than 600
 	if ($(window).width()<600){
+		isMobile = true;
 		$("<link/>", {
 			rel: "stylesheet",
 			type: "text/css",
@@ -678,7 +680,6 @@ function search(o){
 		if ($('#s-title').val().length>0){
 			obj['title'] = $('#s-title').val();
 		}
-		//fucker
 		
 		if ($('#s-page').val().length>0){
 			obj['page'] = $('#s-page').val();
@@ -720,6 +721,11 @@ function search(o){
 
 
 function sp(action,json){
+	var _json = JSON.parse(json);
+	_json.isMobile = isMobile;
+	json = JSON.stringify(_json);
+	
+	console.log('json',json,'isMobile',isMobile);
 	$.post('php_scripts/search.php',{'action':action,'json':json},function(data){
 		
 		if (!ie8()){

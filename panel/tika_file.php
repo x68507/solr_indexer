@@ -128,14 +128,6 @@ function tika($file){
 			
 			$id = $add->appendChild($xml->createElement('field',$meta['md5']));
 				$id->setAttributeNode(new DOMAttr('name','id'));
-			/*
-			$creator = $add->appendChild($xml->createElement('field', $meta['creator']));
-				$creator->setAttributeNode(new DOMAttr('name','creator'));
-			
-			$title = $add->appendChild($xml->createElement('field', htmlentities($meta['title'])));
-				$title->setAttributeNode(new DOMAttr('name','title'));
-			
-			*/
 			
 			$creator = $add->appendChild($xml->createElement('field')); 
 			$creator->appendChild($xml->createCDATASection($meta['creator']));

@@ -21,6 +21,7 @@
 	$aryFiles = array();
 	$aryDirs = array();
 	
+	
 	foreach($dir as $fileinfo){
 		if (!$fileinfo->isDot()){
 			
@@ -46,5 +47,32 @@
 		echo "</file>";
 	}
 	
+	$aryDir = scan_dir($curDir);
+	
+		echo "<numFiles>".$aryDir."</numFiles>";
 	echo "</xml>";
+	
+function scan_dir($path){
+    $allowed = array('pdf','doc','docx');
+	
+	$ite=new RecursiveDirectoryIterator($path);
+
+    $bytestotal=0;
+    $nbfiles=0;
+    foreach (new RecursiveIteratorIterator($ite) as $filename=>$cur) {
+        
+		$ext = pathinfo($cur,PATHINFO_EXTENSION);
+		if (in_array(strtolower($ext),$allowed)){
+			$filesize=$cur->getSize();
+			$bytestotal+=$filesize;
+			$nbfiles++;
+			$files[] = $filename;
+		}
+    }
+
+    $bytestotal=number_format($bytestotal);
+	return $nbfiles;
+    //return array('total_files'=>$nbfiles,'total_size'=>$bytestotal,'files'=>$files);
+}
+
 ?>

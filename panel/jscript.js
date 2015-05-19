@@ -131,7 +131,28 @@ $(document).ready(function(){
 		$(window).off('mousemove.file');
 	});
 	
-	$(document).on('contextmenu','#folders',function(e){
+	$(document).on('contextmenu','#files',function(e){
+		
+		
+			$('body').append('<div id="clicker"></div>');
+			$(document).on('click.clicker','#clicker',function(){
+				$('#clicker').remove();
+				$('#contextmenu').addClass('h');
+				$(document).off('click.clicker');
+			});
+			console.log('pageX',e.pageX,'pageY',e.pageY);
+			
+			$('#contextmenu').css({'left':e.pageX,'top':e.pageY}).removeClass('h');
+			
+			e.preventDefault();
+		
+	});
+	
+	$(document).on('click','#contextmenu div',function(e){
+		var file = $('#curDir').text() + '\\' + $('.act .name').text();
+		var url = 'download_file.php?f='+file;
+		$('#clicker').click();
+		window.open(url,'_blank');
 		
 	});
 	
@@ -222,6 +243,7 @@ function dir(){
 		,dataType:'xml'
 		,type:'POST'
 		,success:function(data){
+			$('#numFiles').text($(data).find('numFiles').text() + ' files');
 			curDir = $(data).find('curDir').text();
 			setCookie('curDir',curDir);
 			$('#curDir').html(curDir);
@@ -307,7 +329,6 @@ function rename(){
 
 function new_directory(){
 	var name = prompt('New directory name:');
-	//var curDir = $('#curDir').text();
 	if (name!==null){
 		if (!isValid){
 			alert('Please enter a valid file name');

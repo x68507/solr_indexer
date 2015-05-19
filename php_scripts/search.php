@@ -185,6 +185,11 @@
 				}
 				
 				//Default params for building the URL
+				
+				if (isset($json->{'isMobile'}) && $json->{'isMobile'} == 'true'){
+					$numRows = 10;
+				}
+				
 				$start = '&start='.$json->{'offset'}*$numRows;
 				$rows = '&rows='.$numRows;
 				

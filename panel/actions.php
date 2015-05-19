@@ -125,6 +125,7 @@ function server_start(){
 	error_reporting(-1);
 	
 	return $str;
+	//return $cmd;
 }
 
 function server_stop(){

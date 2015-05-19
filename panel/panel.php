@@ -85,6 +85,7 @@
 						<input class='hover gray bb btr btl bbr bbl' type='Button' value='New Directory' onclick='new_directory()'>
 						<input class='hover gray bb btr btl bbr bbl' type='Button' value='Delete Selected' onclick='del()'>
 						<input class='hover gray bb btr btl bbr bbl' type='button' value='Rename' onclick='rename()'>
+						<span id='numFiles'></span>
 					<!--</form>-->
 				</div>
 			</div>
@@ -103,6 +104,9 @@
 		</form>
 		<div id='logout'>
 			<a href='#' onclick='logout()'>Logout</a>
+		</div>
+		<div id='contextmenu' class='h'>
+			<div class='hover'>Download</div>
 		</div>
 	</body>
 	

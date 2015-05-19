@@ -6,7 +6,7 @@
 		<!--base directory in the root folder where all the documents are stored-->
 		<baseDir>\docs\</baseDir>
 		<!--number of rows to show per search result page-->
-		<numRows>10</numRows>
+		<numRows>25</numRows>
 		<!--initial/restricted IP address to query the SOLR instance
 			
 			SOLR can be located on a different machine than the Apache/PHP server; by default, they are located on the same server

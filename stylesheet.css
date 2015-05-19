@@ -10,7 +10,7 @@ body{overflow-y:hidden}
 	#container-search{position:relative;top:10px;height:95%;height:calc(100% - 26px);}
 	#right{float:left;width:620px;width:calc(100% - 342px);top:0;}
 	#sidr{float:left;width:340px;top:50px;display:block}
-	#search-x{width:90%;width:calc(100% - 22px)}
+	#search-x{width:90%;width:calc(100% - 22px);left:0;}
 	.full{width:100% !important}
 	.half{width:49% !important}
 	#search-button{position:absolute;top:0;right:10px}
@@ -26,7 +26,7 @@ body{overflow-y:hidden}
 	#sidr{display:none;top:50px;}
 	#container-search{position:relative;left:0;top:10px;height:95%;height:calc(100% - 26px);}
 	#right{width:100%;top:0;}
-	#search-x{width:90%;width:calc(100% - 12px)}
+	#search-x{width:90%;width:calc(100% - 12px - 20px);left:20px;}
 	#search-head,#search-header{margin-left:10px !important;}
 	
 	.full{width:95% !important}
