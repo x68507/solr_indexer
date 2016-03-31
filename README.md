@@ -22,6 +22,7 @@ The complete web app mimics Google Drive, but adds the additional functionality 
  - Apache Tika JAR executible (written for v1.8)
  - Apache SOLR Server (written for v4.10)
  - PHP (used as a bundled package with XAMPP; >v5.4)
+  - Make sure that PHP.exe is set in the PATH environment variable
  - Composer (required for building Funstaff's PHP Tika's wrapper)
 
 #Command Line
