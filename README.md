@@ -18,13 +18,26 @@ The complete web app mimics Google Drive, but adds the additional functionality 
 #Key Requirement
  - Written for execution on a Windows VM; tested on both Windows 7 and Windows Server 2012
  - Java Runtime Environment (JRE); the Java Software Development Kit (JDK) will also work, but is not required
-  - Make sure that JAVA_HOME is defined as an environment variable
+  - Make sure that JAVA_HOME is defined as a SYSTEM environment variable
  - Apache Tika JAR executible (written for v1.8)
  - Apache SOLR Server (written for v4.10)
+  - Apache has changed the default example SOLR instance and the paths, so any other version of SOLR will not work
+  - You can access archived version at http://archive.apache.org/dist/
  - PHP (used as a bundled package with XAMPP; >v5.4)
   - Make sure that PHP.exe is set in the PATH environment variable
  - Composer (required for building Funstaff's PHP Tika's wrapper)
 
+#Install for First Time
+ 1. Start Apache server
+ 2. Download repository to your web server htdocs/www folder
+ 3. Install Composer and restart computer
+ 4. Open command window and CD to folder (cd c:\xampp\htdocs\solr)
+ 5. Type in "c:\xampp\php\php.exe c:\ProgramData\ComposerSetup\bin\composer.phar install"
+ 6. Go to "http://localhost/solr/panel" and login (root:sap is the default username:password)
+ 7. Click "Start Server" and you should get an output titled "Server started"
+ 
+ 
+ 
 #Command Line
 For some PHP installs, a user does not have sufficient privileges to execute commands in PHP (i.e., default settings for AWS Windows Server 2012 and the out-of-the-box install of XAMPP).  To ensure that SOLR server and Tika parser works, you can always use CLI rather than the *Panel* web interface.
 ##Starting Server
